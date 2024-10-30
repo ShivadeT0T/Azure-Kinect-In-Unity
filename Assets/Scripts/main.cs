@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class main : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class main : MonoBehaviour
         //tracker ids needed for when there are two trackers
         const int TRACKER_ID = 0;
         m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
+        SceneManager.activeSceneChanged += ChangedActiveScene;
     }
 
     void Update()
@@ -27,8 +29,18 @@ public class main : MonoBehaviour
             }
         }
     }
+    private void ChangedActiveScene(UnityEngine.SceneManagement.Scene current, UnityEngine.SceneManagement.Scene next)
+    {
+        DisposingOfObjects();
+    }
 
     void OnApplicationQuit()
+    {
+        DisposingOfObjects();
+    }
+
+
+    private void DisposingOfObjects()
     {
         if (m_skeletalTrackingProvider != null)
         {
