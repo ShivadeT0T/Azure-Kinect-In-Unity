@@ -101,7 +101,7 @@ public class TrackerHandler : MonoBehaviour
         basisJointMap[JointId.EarRight] = spineHipBasis;
     }
 
-    public void updateTracker(BackgroundData trackerFrameData)
+    public void updateTracker(BackgroundDataNoDepth trackerFrameData)
     {
         //this is an array in case you want to get the n closest bodies
         int closestBody = findClosestTrackedBody(trackerFrameData);
@@ -125,7 +125,7 @@ public class TrackerHandler : MonoBehaviour
         return retIndex;
     }
 
-    private int findClosestTrackedBody(BackgroundData trackerFrameData)
+    private int findClosestTrackedBody(BackgroundDataNoDepth trackerFrameData)
     {
         int closestBody = -1;
         const float MAX_DISTANCE = 5000.0f;
