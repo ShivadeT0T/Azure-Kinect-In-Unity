@@ -65,5 +65,25 @@ public class BackgroundData : ISerializable
         }
         info.AddValue("DepthImage", ValidDepthImage, typeof(byte[]));
     }
+
+    public static BackgroundData DeepCopy(BackgroundData copyFromData)
+    {
+        BackgroundData copiedData = new BackgroundData();
+        ulong numOfBodies = copyFromData.NumOfBodies;
+        copiedData.NumOfBodies = copyFromData.NumOfBodies;
+
+        copiedData.TimestampInMs = copyFromData.TimestampInMs;
+        copiedData.DepthImageWidth = copyFromData.DepthImageWidth;
+        copiedData.DepthImageHeight = copyFromData.DepthImageHeight;
+        copiedData.DepthImageSize = copyFromData.DepthImageSize;
+
+        for (int i = 0; i < (int)numOfBodies; i++)
+        {
+            copiedData.Bodies[i] = copyFromData.Bodies[i];
+        }
+        copiedData.DepthImage = null;
+
+        return copiedData;
+    }
 }
 
