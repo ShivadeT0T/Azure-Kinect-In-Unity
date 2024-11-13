@@ -115,7 +115,7 @@ public struct Body : ISerializable
             JointRotations[i].W = JointRotations_W[i];
         }
 
-        uint[] ConfidenceLevel = (uint[])info.GetValue("ConfidenceLevel", typeof(uint[]));
+        uint[] ConfidenceLevel = (uint[])info.GetValue("JointPrecisions", typeof(uint[]));
         JointPrecisions = new JointConfidenceLevel[ConfidenceLevel.Length];
         for (int i = 0; i < ConfidenceLevel.Length; i++)
         {
@@ -174,7 +174,7 @@ public struct Body : ISerializable
         {
             ConfidenceLevels[i] = (uint)JointPrecisions[i];
         }
-        info.AddValue("ConfidenceLevels", ConfidenceLevels, typeof(uint[]));
+        info.AddValue("JointPrecisions", ConfidenceLevels, typeof(uint[]));
 
         info.AddValue("Length", Length, typeof(int));
         info.AddValue("Id", Id, typeof(uint));
