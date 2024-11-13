@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Kinect.BodyTracking;
 using Microsoft.Azure.Kinect.Sensor;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -27,7 +28,8 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
             UnityEngine.Debug.Log("Starting body tracker background thread.");
 
             // Buffer allocations.
-            BackgroundData currentFrameData = new BackgroundData();
+            BackgroundDataNoDepth currentFrameData = new BackgroundDataNoDepth();
+
             // Open device.
             using (Device device = Device.Open(id))
             {
@@ -82,23 +84,23 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                                     initialTimestamp = depthImage.DeviceTimestamp;
                                 }
                                 currentFrameData.TimestampInMs = (float)(depthImage.DeviceTimestamp - initialTimestamp).TotalMilliseconds;
-                                currentFrameData.DepthImageWidth = depthImage.WidthPixels;
-                                currentFrameData.DepthImageHeight = depthImage.HeightPixels;
+                                //currentFrameData.DepthImageWidth = depthImage.WidthPixels;
+                                //currentFrameData.DepthImageHeight = depthImage.HeightPixels;
 
                                 // Read image data from the SDK.
-                                var depthFrame = MemoryMarshal.Cast<byte, ushort>(depthImage.Memory.Span);
+                                //var depthFrame = MemoryMarshal.Cast<byte, ushort>(depthImage.Memory.Span);
 
                                 // Repack data and store image data.
-                                int byteCounter = 0;
-                                currentFrameData.DepthImageSize = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight * 3;
+                                //int byteCounter = 0;
+                                //currentFrameData.DepthImageSize = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight * 3;
 
-                                for (int it = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight - 1; it > 0; it--)
-                                {
-                                    byte b = (byte)(depthFrame[it] / (ConfigLoader.Instance.Configs.SkeletalTracking.MaximumDisplayedDepthInMillimeters) * 255);
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                }
+                                //for (int it = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight - 1; it > 0; it--)
+                                //{
+                                //    byte b = (byte)(depthFrame[it] / (ConfigLoader.Instance.Configs.SkeletalTracking.MaximumDisplayedDepthInMillimeters) * 255);
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //}
 
                                 if (RawDataLoggingFile != null && RawDataLoggingFile.CanWrite)
                                 {
