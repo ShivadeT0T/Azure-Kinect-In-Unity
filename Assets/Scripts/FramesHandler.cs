@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using UnityEngine;
 
 public enum HandlerType
 {
@@ -11,6 +12,8 @@ public class FramesHandler
 {
     private readonly int FrameLimit;
     private int FrameCount = 0;
+    private bool LastFrameReached = false;
+
     public BackgroundDataNoDepth[] FramesArray;
     public ConcurrentQueue<BackgroundDataNoDepth> FramesProcessor;
     public List<BackgroundDataNoDepth> FramesList;
@@ -38,9 +41,12 @@ public class FramesHandler
         }
     }
 
-    private void ProcessFrame()
+    private void ProcessFrame(BackgroundDataNoDepth frame)
     {
-
+        if (!LastFrameReached)
+        {
+            FramesProcessor.Enqueue(BackgroundDataNoDepth.DeepCopy(frame));
+        }
     }
 
 }
