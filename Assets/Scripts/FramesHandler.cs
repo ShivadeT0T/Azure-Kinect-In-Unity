@@ -1,5 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum HandlerType
@@ -41,12 +46,56 @@ public class FramesHandler
         }
     }
 
-    private void ProcessFrame(BackgroundDataNoDepth frame)
+    public void ProcessFrame(BackgroundDataNoDepth frame)
     {
         if (!LastFrameReached)
         {
+            Debug.Log(frame.TimestampInMs);
             FramesProcessor.Enqueue(BackgroundDataNoDepth.DeepCopy(frame));
+            FrameCount++;
+
+            if(FrameCount == FrameLimit)
+            {
+                LastFrameReached = true;
+                Debug.Log("Last frame reached");
+                FramesProcessor.CopyTo(FramesArray, 0);
+            }
         }
+    }
+
+    public void SaveAnimation(string fileName)
+    {
+        if (!IsNullOrEmpty(FramesArray) && LastFrameReached)
+        {
+            string json = JsonConvert.SerializeObject(FramesArray, Formatting.Indented);
+            SaveLoad.CreateJsonFile(fileName, json);
+        } else
+        {
+            Debug.Log("Can't save animation with empty array or while the recording is still in progress.");
+        }
+    }
+    private bool IsNullOrEmpty(Array array)
+    {
+        return (array == null || array.Length == 0);
+    }
+
+    public IReadOnlyCollection<BackgroundDataNoDepth> LoadAnimation(string fileName)
+    {
+        string animationJson = SaveLoad.LoadJsonFile(fileName);
+        ITraceWriter traceWriter = new MemoryTraceWriter();
+
+        try
+        {
+            FramesList = JsonConvert.DeserializeObject<List<BackgroundDataNoDepth>>(animationJson, 
+                new JsonSerializerSettings { TraceWriter = traceWriter });
+
+        } catch (Exception e)
+        {
+            Debug.Log(traceWriter);
+            Debug.Log($"Couldn't deserialize object: {e.Message}");
+        }
+
+        return FramesList;
     }
 
 }
