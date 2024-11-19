@@ -4,13 +4,14 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour
 {
 
-    public void OnPlayButton()
+    public void GoToScene(string sceneName)
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(sceneName);
     }
 
     public void OnQuitButton()
     {
         Application.Quit();
+        Debug.Log("Quit button pressed");
     }
 }
