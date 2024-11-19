@@ -33,12 +33,21 @@ public class FramesHandler
                 FramesArray = new BackgroundDataNoDepth[FrameLimit];
                 FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
                 break;
-            case HandlerType.LOAD:
-                FramesList = new List<BackgroundDataNoDepth>();
-                break;
             case HandlerType.BOTH:
                 FramesArray = new BackgroundDataNoDepth[FrameLimit];
                 FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
+                FramesList = new List<BackgroundDataNoDepth>();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public FramesHandler(HandlerType handlerType)
+    {
+        switch (handlerType)
+        {
+            case HandlerType.LOAD:
                 FramesList = new List<BackgroundDataNoDepth>();
                 break;
             default:
@@ -68,7 +77,7 @@ public class FramesHandler
         if (!IsNullOrEmpty(FramesArray) && LastFrameReached)
         {
             string json = JsonConvert.SerializeObject(FramesArray, Formatting.Indented);
-            SaveLoad.CreateJsonFile(fileName, json);
+            FileManager.CreateJsonFile(fileName, json);
         } else
         {
             Debug.Log("Can't save animation with empty array or while the recording is still in progress.");
@@ -81,7 +90,7 @@ public class FramesHandler
 
     public IReadOnlyCollection<BackgroundDataNoDepth> LoadAnimation(string fileName)
     {
-        string animationJson = SaveLoad.LoadJsonFile(fileName);
+        string animationJson = FileManager.LoadJsonFile(fileName);
         ITraceWriter traceWriter = new MemoryTraceWriter();
 
         try

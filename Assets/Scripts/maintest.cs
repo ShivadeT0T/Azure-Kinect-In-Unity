@@ -11,8 +11,8 @@ using UnityEngine.SceneManagement;
 public class maintest : MonoBehaviour
 {
     public GameObject m_tracker;
-    public string filePath = Path.Combine(Application.streamingAssetsPath, "test2.json");
-    public List<BackgroundDataNoDepth> frames;
+    public IReadOnlyCollection<BackgroundDataNoDepth> frames;
+    public FramesHandler m_framesHandler;
 
 
     private void Awake()
@@ -21,9 +21,10 @@ public class maintest : MonoBehaviour
     }
     void Start()
     {
+        m_framesHandler = new FramesHandler(HandlerType.LOAD);
         try
         {
-            frames = ConfigLoader.Instance.Frames;
+            frames = m_framesHandler.LoadAnimation("test");
             StartCoroutine(Waiter());
         } catch (Exception e)
         {

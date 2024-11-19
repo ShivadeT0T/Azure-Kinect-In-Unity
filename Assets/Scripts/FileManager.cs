@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine;
 
-public class SaveLoad
+public class FileManager
 {
     public static void CreateJsonFile(string fileName, string json)
     {
@@ -15,6 +15,7 @@ public class SaveLoad
         {
             string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar +  "Animations";
             string jsonFile = fileName + ".json";
+
             string filePath = Path.Combine(directory, jsonFile);
             File.WriteAllText(filePath, json);
             Debug.Log("Writing JSON file successful");
@@ -30,7 +31,10 @@ public class SaveLoad
         string animationJson = null;
         try
         {
-            string filePath = Path.Combine(Application.streamingAssetsPath, fileName + ".json");
+            string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
+            string jsonFile = fileName + ".json";
+
+            string filePath = Path.Combine(directory, jsonFile);
             animationJson = File.ReadAllText(filePath);
             Debug.Log("Loading JSON file successful");
 
