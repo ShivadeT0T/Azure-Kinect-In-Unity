@@ -48,14 +48,14 @@ public class FileManager
     public static IReadOnlyCollection<AnimationFile> LoadFileInfo()
     {
         List<AnimationFile> animationFiles = new List<AnimationFile>();
-        string animationDirectory = Path.Combine(Application.streamingAssetsPath, "Animations");
+        string animationDirectory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
         try
         {
             var jsonFiles = Directory.EnumerateFiles(animationDirectory, "*.json");
             foreach(string file in jsonFiles)
             {
                 string name = Path.GetFileNameWithoutExtension(file);
-                DateTime creationTime = File.GetCreationTimeUtc(file);
+                DateTime creationTime = File.GetCreationTime(file);
                 animationFiles.Add(new AnimationFile(name, creationTime));
             }
         } catch (Exception e)

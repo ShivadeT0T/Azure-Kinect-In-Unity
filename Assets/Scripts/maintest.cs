@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,6 +26,11 @@ public class maintest : MonoBehaviour
         try
         {
             frames = m_framesHandler.LoadAnimation("test");
+            IReadOnlyCollection<AnimationFile> files = FileManager.LoadFileInfo();
+            foreach (AnimationFile file in files)
+            {
+                Debug.Log($"{file.Name} : {file.CreationTime.ToString()}");
+            }
             StartCoroutine(Waiter());
         } catch (Exception e)
         {
