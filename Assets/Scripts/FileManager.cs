@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class FileManager
@@ -45,7 +46,7 @@ public class FileManager
             return animationJson;
     }
 
-    public static IReadOnlyCollection<AnimationFile> LoadFileInfo()
+    public static IList<AnimationFile> LoadFilesInfo()
     {
         List<AnimationFile> animationFiles = new List<AnimationFile>();
         string animationDirectory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
@@ -63,6 +64,6 @@ public class FileManager
             Debug.LogError($"Failed to fetch files: {e.Message}");
         }
 
-        return animationFiles;
+        return animationFiles.OrderByDescending(x => x.CreationTime).ToList();
     }
 }

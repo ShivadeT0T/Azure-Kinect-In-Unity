@@ -26,7 +26,7 @@ public class maintest : MonoBehaviour
         try
         {
             frames = m_framesHandler.LoadAnimation("test");
-            IReadOnlyCollection<AnimationFile> files = FileManager.LoadFileInfo();
+            List<AnimationFile> files = FileManager.LoadFilesInfo().ToList();
             foreach (AnimationFile file in files)
             {
                 Debug.Log($"{file.Name} : {file.CreationTime.ToString()}");
