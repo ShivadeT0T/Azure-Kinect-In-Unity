@@ -2,9 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,7 +23,7 @@ public class maintest : MonoBehaviour
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
         try
         {
-            frames = m_framesHandler.LoadAnimation("test");
+            frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName);
             List<AnimationFile> files = FileManager.LoadFilesInfo().ToList();
             foreach (AnimationFile file in files)
             {

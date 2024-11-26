@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum DialogType
 {
@@ -59,7 +59,8 @@ public class MenuUI : MonoBehaviour
 
     public void LoadScene(string fileName)
     {
-        Debug.Log("Load Scene function called. Work in progress...");
+        InfoBetweenScenes.AnimationFileName = fileName;
+        SceneManager.LoadScene("LoadRecording");
     }
 
     public void DeleteFile(AnimationDetails animationObj)
