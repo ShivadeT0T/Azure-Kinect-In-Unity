@@ -64,7 +64,8 @@ public class MenuUI : MonoBehaviour
 
     public void DeleteFile(AnimationDetails animationObj)
     {
-        Debug.Log("Delete file function called. Work in progress...");
+        //Debug.Log("Delete file function called. Work in progress...");
+        FileManager.DeleteFile(animationObj.Name);
         animationList.Remove(animationObj);
         CloseCanvas(DialogCanvas);
         CloseCanvas(LoadScreenCanvas);

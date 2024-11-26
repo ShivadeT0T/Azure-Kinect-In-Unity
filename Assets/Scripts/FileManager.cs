@@ -5,16 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using UnityEngine;
 
 public class FileManager
 {
+    public static string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
     public static void CreateJsonFile(string fileName, string json)
     {
         try
         {
-            string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar +  "Animations";
             string jsonFile = fileName + ".json";
 
             string filePath = Path.Combine(directory, jsonFile);
@@ -32,7 +33,6 @@ public class FileManager
         string animationJson = null;
         try
         {
-            string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
             string jsonFile = fileName + ".json";
 
             string filePath = Path.Combine(directory, jsonFile);
@@ -45,14 +45,31 @@ public class FileManager
         }
             return animationJson;
     }
+    public static void DeleteFile(string fileName)
+    {
+        try
+        {
+            string jsonFile = fileName + ".json";
+            string metaFile = fileName + ".json.meta";
+
+            string jsonFilePath = Path.Combine(directory, jsonFile);
+            string metaFilePath = Path.Combine(directory, metaFile);
+            File.Delete(jsonFilePath);
+            File.Delete(metaFilePath);
+            Debug.Log("JSON file deleted successfully");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed deleting a file: {e.Message}");
+        }
+    }
 
     public static IList<AnimationFile> LoadFilesInfo()
     {
         List<AnimationFile> animationFiles = new List<AnimationFile>();
-        string animationDirectory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
         try
         {
-            var jsonFiles = Directory.EnumerateFiles(animationDirectory, "*.json");
+            var jsonFiles = Directory.EnumerateFiles(directory, "*.json");
             foreach(string file in jsonFiles)
             {
                 string name = Path.GetFileNameWithoutExtension(file);
@@ -66,4 +83,5 @@ public class FileManager
 
         return animationFiles.OrderByDescending(x => x.CreationTime).ToList();
     }
+
 }

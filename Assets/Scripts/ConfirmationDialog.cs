@@ -51,7 +51,7 @@ public class ConfirmationDialog : MonoBehaviour
         uiScript.CloseCanvas(selfCanvas);
     }
 
-    public string FormatString(string s)
+    private string FormatString(string s)
     {
         int MaxLength = 5;
         if (s.Length > MaxLength)
