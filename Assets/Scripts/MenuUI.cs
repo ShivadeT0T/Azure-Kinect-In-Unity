@@ -19,7 +19,7 @@ public class AnimationDetails
         Date = date;
     }
 }
-public class GUI : MonoBehaviour
+public class MenuUI : MonoBehaviour
 {
     public List<AnimationDetails> animationList;
 
@@ -27,7 +27,9 @@ public class GUI : MonoBehaviour
     public AnimationDetailsView animationDetailsPrefab;
 
     public GameObject LoadScreenCanvas;
-    public ConfirmationDialog DialogCanvas;
+
+    public GameObject DialogCanvas;
+    public ConfirmationDialog DialogPrefab;
 
     public DialogType dialogType = DialogType.DEFAULT;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -44,14 +46,28 @@ public class GUI : MonoBehaviour
         canvas.SetActive(false);
     }
 
-    public void ShowDialog(string name, HandlerType type)
+    public void ShowCanvas(GameObject canvas)
     {
-
+        canvas.SetActive(true);
     }
 
-    public void ShowLoadScreen()
+    public void ShowDialog(AnimationDetails animationObj, DialogType dialogType)
     {
-        LoadScreenCanvas.SetActive(true);
+        DialogPrefab.UpdateDialog(animationObj, dialogType);
+        ShowCanvas(DialogCanvas);
+    }
+
+    public void LoadScene(string fileName)
+    {
+        Debug.Log("Load Scene function called. Work in progress...");
+    }
+
+    public void DeleteFile(AnimationDetails animationObj)
+    {
+        Debug.Log("Delete file function called. Work in progress...");
+        animationList.Remove(animationObj);
+        CloseCanvas(DialogCanvas);
+        CloseCanvas(LoadScreenCanvas);
     }
 
     public void ClearPrefab()
@@ -66,7 +82,7 @@ public class GUI : MonoBehaviour
     {
 
         ClearPrefab();
-        ShowLoadScreen();
+        ShowCanvas(LoadScreenCanvas);
         
         foreach (AnimationDetails animationDetails in animationList)
         {
