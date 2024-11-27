@@ -1,34 +1,25 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class main : MonoBehaviour
+public class liveRecording : MonoBehaviour
 {
     // Handler for SkeletalTracking thread.
     public GameObject m_tracker;
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
     public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
 
-    // Handler for animation frames
-    private FramesHandler m_framesHandler;
+    // The "brain" of the scene which will get frames from this script
+    public RecordingManager manager;
 
     void Start()
     {
-        // Give desired frame limit for the animation to the frames handler
-        const int frameLimit = 450;
-        m_framesHandler = new FramesHandler(HandlerType.SAVE);
-
         //tracker ids needed for when there are two trackers
         const int TRACKER_ID = 0;
         m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
         SceneManager.activeSceneChanged += ChangedActiveScene;
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (m_skeletalTrackingProvider.IsRunning)
@@ -37,7 +28,6 @@ public class main : MonoBehaviour
             {
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
-                    m_framesHandler.ProcessFrame(m_lastFrameData);
                     m_tracker.GetComponent<TrackerHandler>().updateTracker(m_lastFrameData);
                 }
             }
@@ -51,7 +41,6 @@ public class main : MonoBehaviour
     void OnApplicationQuit()
     {
         DisposingOfObjects();
-        m_framesHandler.SaveAnimation("dummy");
     }
 
 

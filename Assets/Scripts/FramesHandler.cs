@@ -15,38 +15,23 @@ public enum HandlerType
 }
 public class FramesHandler
 {
-    private readonly int FrameLimit;
+    private int FrameLimit = 0;
     private int FrameCount = 0;
     private bool LastFrameReached = false;
+    private bool recordingSetup = false;
 
     public BackgroundDataNoDepth[] FramesArray;
     public ConcurrentQueue<BackgroundDataNoDepth> FramesProcessor;
     public List<BackgroundDataNoDepth> FramesList;
 
-    public FramesHandler(int frameLimit, HandlerType handlerType)
-    {
-        FrameLimit = frameLimit;
-
-        switch (handlerType)
-        {
-            case HandlerType.SAVE:
-                FramesArray = new BackgroundDataNoDepth[FrameLimit];
-                FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
-                break;
-            case HandlerType.BOTH:
-                FramesArray = new BackgroundDataNoDepth[FrameLimit];
-                FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
-                FramesList = new List<BackgroundDataNoDepth>();
-                break;
-            default:
-                break;
-        }
-    }
-
     public FramesHandler(HandlerType handlerType)
     {
         switch (handlerType)
         {
+            case HandlerType.SAVE:
+                FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
+                FramesList = new List<BackgroundDataNoDepth>();
+                break;
             case HandlerType.LOAD:
                 FramesList = new List<BackgroundDataNoDepth>();
                 break;
@@ -55,8 +40,18 @@ public class FramesHandler
         }
     }
 
+    public void SetUpForRecording(int frameLimit)
+    {
+        FrameLimit = frameLimit;
+        FramesArray = new BackgroundDataNoDepth[frameLimit];
+        LastFrameReached = false;
+        recordingSetup = true;
+    }
+
     public void ProcessFrame(BackgroundDataNoDepth frame)
     {
+        if (!recordingSetup) return;
+
         if (!LastFrameReached)
         {
             Debug.Log(frame.TimestampInMs);
@@ -68,6 +63,7 @@ public class FramesHandler
                 LastFrameReached = true;
                 Debug.Log("Last frame reached");
                 FramesProcessor.CopyTo(FramesArray, 0);
+                recordingSetup = false;
             }
         }
     }
@@ -105,6 +101,11 @@ public class FramesHandler
         }
 
         return FramesList;
+    }
+
+    public IReadOnlyCollection<BackgroundDataNoDepth> ReturnAnimationList()
+    {
+        return FramesProcessor;
     }
 
 }
