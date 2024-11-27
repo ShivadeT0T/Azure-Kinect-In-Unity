@@ -51,7 +51,7 @@ public class main : MonoBehaviour
     void OnApplicationQuit()
     {
         DisposingOfObjects();
-        m_framesHandler.SaveAnimation("test");
+        m_framesHandler.SaveAnimation("dummy");
     }
 
 
