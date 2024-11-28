@@ -46,6 +46,14 @@ public class FramesHandler
         FramesArray = new BackgroundDataNoDepth[frameLimit];
         LastFrameReached = false;
         recordingSetup = true;
+        FramesProcessor.Clear();
+    }
+
+    public bool ProcessingFrames(BackgroundDataNoDepth frame)
+    {
+        if (LastFrameReached) return false;
+        ProcessFrame(frame);
+        return true;
     }
 
     public void ProcessFrame(BackgroundDataNoDepth frame)

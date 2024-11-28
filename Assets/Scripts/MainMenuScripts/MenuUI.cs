@@ -63,6 +63,11 @@ public class MenuUI : MonoBehaviour
         SceneManager.LoadScene("LoadRecording");
     }
 
+    public void RecordScene()
+    {
+        SceneManager.LoadScene("SaveRecording");
+    }
+
     public void DeleteFile(AnimationDetails animationObj)
     {
         //Debug.Log("Delete file function called. Work in progress...");
@@ -94,5 +99,4 @@ public class MenuUI : MonoBehaviour
             animDetailObj.transform.SetParent(scrollViewContent.transform, false);
         }
     }
-
 }

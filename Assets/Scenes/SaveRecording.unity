@@ -890,7 +890,7 @@ GameObject:
   - component: {fileID: 381355423}
   - component: {fileID: 381355422}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TimerText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1096,7 +1096,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 418082484}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1285852068}
+        m_TargetAssemblyTypeName: RecordingUI, Assembly-CSharp
+        m_MethodName: SaveAnimation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &418082484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1135,6 +1147,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 418082481}
   m_CullTransparentMesh: 1
+--- !u!1 &457424564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 457424566}
+  - component: {fileID: 457424565}
+  m_Layer: 0
+  m_Name: ReplayObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &457424565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457424564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa0cc2f4e57c50a4fb981cc32f5a62d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_tracker: {fileID: 987132035}
+--- !u!4 &457424566
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457424564}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 400.1562, y: 268.32617, z: -174.00146}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &500872562
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,7 +1320,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 546123392}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1285852068}
+        m_TargetAssemblyTypeName: RecordingUI, Assembly-CSharp
+        m_MethodName: MenuScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &546123392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1311,10 +1380,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 602949885}
-  - component: {fileID: 602949884}
+  - component: {fileID: 602949886}
   - component: {fileID: 602949883}
   m_Layer: 0
-  m_Name: main
+  m_Name: LiveObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1332,19 +1401,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a431c729dad074aadbc8e28bb624b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &602949884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 602949882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71abc990c46f07c40ac230c12aa9636d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_tracker: {fileID: 987132035}
 --- !u!4 &602949885
 Transform:
   m_ObjectHideFlags: 0
@@ -1360,6 +1416,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &602949886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602949882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ac326dbdc137e469093db3d84010f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_tracker: {fileID: 987132035}
+  manager: {fileID: 1129461274}
 --- !u!1 &712415151
 GameObject:
   m_ObjectHideFlags: 0
@@ -1849,7 +1919,7 @@ GameObject:
   - component: {fileID: 787347753}
   - component: {fileID: 787347752}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: CountdownText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2605,7 +2675,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1129461273}
-  - component: {fileID: 1129461272}
+  - component: {fileID: 1129461274}
   m_Layer: 0
   m_Name: RecordingLogicManager
   m_TagString: Untagged
@@ -2613,27 +2683,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1129461272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1129461271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3866eb946253244d97aa09d093ad3e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Seconds: {fileID: 1129947453}
-  FileName: {fileID: 1885807777}
-  PrecisionToggle: {fileID: 1359864938}
-  CountdownToStart: {fileID: 0}
-  SecondsLeft: {fileID: 0}
-  RecordingSetup: {fileID: 0}
-  CountdownCanvas: {fileID: 0}
-  SecondsLeftCanvas: {fileID: 0}
-  ConfirmationDialog: {fileID: 0}
 --- !u!4 &1129461273
 Transform:
   m_ObjectHideFlags: 0
@@ -2649,6 +2698,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1129461274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129461271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 720d0ef8216bda24b95ed72048b580a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Countdown: 5
+  recordingObj: {fileID: 602949882}
+  recordingScript: {fileID: 602949886}
+  replayObj: {fileID: 457424564}
+  replayScript: {fileID: 457424565}
+  uiManager: {fileID: 1285852068}
+  fps: 30
+  counter: 0
 --- !u!1 &1129947451
 GameObject:
   m_ObjectHideFlags: 0
@@ -3052,7 +3121,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1270091802}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1285852068}
+        m_TargetAssemblyTypeName: RecordingUI, Assembly-CSharp
+        m_MethodName: RestartScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1270091802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3181,15 +3262,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3866eb946253244d97aa09d093ad3e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Seconds: {fileID: 0}
-  FileName: {fileID: 0}
-  PrecisionToggle: {fileID: 0}
-  CountdownToStart: {fileID: 0}
-  SecondsLeft: {fileID: 0}
-  RecordingSetup: {fileID: 0}
-  CountdownCanvas: {fileID: 0}
-  SecondsLeftCanvas: {fileID: 0}
-  ConfirmationDialog: {fileID: 0}
+  Seconds: {fileID: 1129947453}
+  FileName: {fileID: 1885807777}
+  PrecisionToggle: {fileID: 1359864938}
+  CountdownToStart: {fileID: 787347752}
+  SecondsLeft: {fileID: 381355422}
+  RecordingSetup: {fileID: 55733887}
+  CountdownCanvas: {fileID: 1973620263}
+  SecondsLeftCanvas: {fileID: 1723315273}
+  ConfirmationDialog: {fileID: 1735263310}
+  recordingManager: {fileID: 1129461274}
 --- !u!1 &1311297228
 GameObject:
   m_ObjectHideFlags: 0
@@ -4503,7 +4585,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1886897825}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1285852068}
+        m_TargetAssemblyTypeName: RecordingUI, Assembly-CSharp
+        m_MethodName: BeginRecordingProcess
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1886897825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5081,6 +5175,7 @@ SceneRoots:
   - {fileID: 1195148925}
   - {fileID: 1112788970}
   - {fileID: 602949885}
+  - {fileID: 457424566}
   - {fileID: 1805530726}
   - {fileID: 1735263314}
   - {fileID: 1723315277}
