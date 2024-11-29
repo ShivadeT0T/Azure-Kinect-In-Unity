@@ -45,8 +45,8 @@ public class liveRecording : MonoBehaviour
 
     public void UpdateTimestamp()
     {
-        timeStamp = m_lastFrameData.TimestampInMs;
-        Debug.Log(timeStamp);
+        timeStamp = timeStamp + m_lastFrameData.TimestampInMs;
+        Debug.Log("Update timestamp: " + timeStamp);
     }
 
     private void ChangedActiveScene(UnityEngine.SceneManagement.Scene current, UnityEngine.SceneManagement.Scene next)

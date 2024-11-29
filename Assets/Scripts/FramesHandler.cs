@@ -43,6 +43,7 @@ public class FramesHandler
     public void SetUpForRecording(int frameLimit)
     {
         FrameLimit = frameLimit;
+        FrameCount = 0;
         FramesArray = new BackgroundDataNoDepth[frameLimit];
         LastFrameReached = false;
         recordingSetup = true;
