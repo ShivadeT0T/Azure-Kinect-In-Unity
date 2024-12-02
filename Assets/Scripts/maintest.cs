@@ -24,6 +24,7 @@ public class maintest : MonoBehaviour
         try
         {
             frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName);
+            Debug.Log(frames.Count);
             List<AnimationFile> files = FileManager.LoadFilesInfo().ToList();
             foreach (AnimationFile file in files)
             {
