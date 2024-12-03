@@ -8,6 +8,7 @@ public abstract class BackgroundDataProvider:IDisposable
     private bool m_latest = false;
     object m_lockObj = new object();
     public bool IsRunning { get; set; } = false;
+    public bool isOffline { get; set; } = false;
     private CancellationTokenSource _cancellationTokenSource;
     private CancellationToken _token;
 

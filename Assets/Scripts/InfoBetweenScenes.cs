@@ -1,4 +1,4 @@
 ﻿public static class InfoBetweenScenes
 {
-    public static string AnimationFileName;
+    public static string AnimationFileName = "test";
 }

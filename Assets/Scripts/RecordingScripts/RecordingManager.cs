@@ -111,6 +111,10 @@ public class RecordingManager : MonoBehaviour
             RecordingOn = false;
             uiManager.ReturnToStart();
         }
+    }
 
+    public void NoTrackerHandling()
+    {
+        uiManager.MenuScene();
     }
 }

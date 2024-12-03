@@ -28,6 +28,9 @@ public class AnimationPlayer : MonoBehaviour
         frameLimit = frames.Count;
 
         timeSlider.onValueChanged.AddListener(HandleTimeSliderValueChanged);
+        timeSlider.maxValue = frameLimit - 1;
+
+        UpdateModel();
     }
 
     private void Update()
@@ -36,26 +39,22 @@ public class AnimationPlayer : MonoBehaviour
         {
             StartCoroutine(Waiter());
             timeSlider.value = frameCounter;
-
-            if (timeSlider.maxValue != frameLimit)
-            {
-                timeSlider.maxValue = frameLimit;
-            }
         }
     }
 
     IEnumerator Waiter()
     {
         //Debug.Log(frameCounter);
-        if (frameCounter == frameLimit) frameCounter = 0;
-        UpdateModel(frames[frameCounter]);
+        UpdateModel();
         frameCounter++;
         yield return new WaitForEndOfFrame();
     }
 
-    private void UpdateModel(BackgroundDataNoDepth frame)
+    private void UpdateModel()
     {
-        m_tracker.GetComponent<TrackerHandler>().updateTracker(frame);
+        if (frameCounter >= frameLimit) frameCounter = 0;
+        if (frameCounter < 0) frameCounter = 0;
+        m_tracker.GetComponent<TrackerHandler>().updateTracker(frames[frameCounter]);
     }
 
     public void PlayPause()
@@ -78,6 +77,14 @@ public class AnimationPlayer : MonoBehaviour
         if (isDragging)
         {
             frameCounter = (int) value;
+            UpdateModel();
         }
+    }
+
+    public void IncrementVideo(bool forward)
+    {
+        frameCounter = forward ? frameCounter + 10 : frameCounter - 10;
+        timeSlider.value = frameCounter;
+        UpdateModel();
     }
 }

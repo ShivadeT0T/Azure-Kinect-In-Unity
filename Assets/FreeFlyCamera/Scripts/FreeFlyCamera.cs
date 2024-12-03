@@ -97,17 +97,12 @@ public class FreeFlyCamera : MonoBehaviour
 #endif
 
 
-    private void Start()
-    {
-        _initPosition = transform.position;
-        _initRotation = transform.eulerAngles;
-    }
+    //private void Start()
+    //{
+    //    _initPosition = transform.position;
+    //    _initRotation = transform.eulerAngles;
+    //}
 
-    private void OnEnable()
-    {
-        if (_active)
-            _wantedMode = CursorLockMode.Locked;
-    }
 
     // Apply requested cursor state
     private void SetCursorState()
@@ -117,7 +112,7 @@ public class FreeFlyCamera : MonoBehaviour
             Cursor.lockState = _wantedMode = CursorLockMode.None;
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.M))
         {
             _wantedMode = CursorLockMode.Locked;
         }
@@ -147,10 +142,10 @@ public class FreeFlyCamera : MonoBehaviour
         if (!_active)
             return;
 
-        //SetCursorState();
+        SetCursorState();
 
-        //if (Cursor.visible)
-        //    return;
+        if (Cursor.visible)
+            return;
 
         // Translation
         if (_enableTranslation)

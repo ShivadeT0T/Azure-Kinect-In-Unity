@@ -20,6 +20,7 @@ public class liveRecording : MonoBehaviour
         const int TRACKER_ID = 0;
         m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
         SceneManager.activeSceneChanged += ChangedActiveScene;
+        //if (!m_skeletalTrackingProvider.IsRunning) manager.NoTrackerHandling();
     }
 
     // Update is called once per frame
@@ -40,6 +41,10 @@ public class liveRecording : MonoBehaviour
                     manager.CheckPrecision();
                 }
             }
+        }
+        if (m_skeletalTrackingProvider.isOffline)
+        {
+            manager.NoTrackerHandling();
         }
     }
 
