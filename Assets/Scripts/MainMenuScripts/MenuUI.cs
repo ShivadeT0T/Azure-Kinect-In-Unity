@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,6 +32,9 @@ public class MenuUI : MonoBehaviour
     public GameObject DialogCanvas;
     public ConfirmationDialog DialogPrefab;
 
+    public GameObject ErrorDialog;
+    public TMP_Text errorMessage;
+
     public DialogType dialogType = DialogType.DEFAULT;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,6 +43,22 @@ public class MenuUI : MonoBehaviour
         foreach (AnimationFile file in FileManager.LoadFilesInfo())
         {
             animationList.Add(new AnimationDetails(file.Name, file.CreationTime.ToString("yyyy-MM-dd HH:mm")));
+        }
+
+        switch (InfoBetweenScenes.menuState)
+        {
+            case MenuState.NORMAL:
+                Debug.Log("Normal");
+                break;
+            case MenuState.ERROR:
+                Debug.Log("Error");
+                errorMessage.text = InfoBetweenScenes.ErrorMessage;
+                ShowCanvas(ErrorDialog);
+                InfoBetweenScenes.menuState = MenuState.NORMAL;
+                break;
+            default:
+                Debug.Log("Default");
+                break;
         }
     }
     public void CloseCanvas(GameObject canvas)

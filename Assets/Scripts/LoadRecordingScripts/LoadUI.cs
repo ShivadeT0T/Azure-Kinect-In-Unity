@@ -25,4 +25,11 @@ public class LoadUI : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
+
+    public void HandleFileError()
+    {
+        InfoBetweenScenes.ErrorMessage = "File could not be found or it contains incorrect data. Please make sure the file exists or has correct data.";
+        InfoBetweenScenes.menuState = MenuState.ERROR;
+        MenuScene();
+    }
 }

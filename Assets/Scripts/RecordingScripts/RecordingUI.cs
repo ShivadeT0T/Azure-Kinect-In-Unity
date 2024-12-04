@@ -94,4 +94,10 @@ public class RecordingUI : MonoBehaviour
         CloseCanvas(SecondsLeftCanvas);
         ShowCanvas(RecordingSetup);
     }
+    public void HandleCameraError()
+    {
+        InfoBetweenScenes.ErrorMessage = "Could not connect to Azure camera. Make sure your camera is connected.";
+        InfoBetweenScenes.menuState = MenuState.ERROR;
+        MenuScene();
+    }
 }

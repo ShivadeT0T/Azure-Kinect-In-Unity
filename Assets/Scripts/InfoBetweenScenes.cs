@@ -1,4 +1,12 @@
-﻿public static class InfoBetweenScenes
+﻿public enum MenuState
 {
-    public static string AnimationFileName = "test";
+    NORMAL,
+    ERROR
+}
+
+public static class InfoBetweenScenes
+{
+    public static string AnimationFileName = "incorrectFile";
+    public static string ErrorMessage;
+    public static MenuState menuState = MenuState.NORMAL;
 }

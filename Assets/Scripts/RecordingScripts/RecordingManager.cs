@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class RecordingManager : MonoBehaviour
 {
-    public int Countdown = 5;
+    [SerializeField]
+    private int Countdown = 5;
     private int Seconds;
     private string FileName;
     private bool Precision;
@@ -115,6 +116,6 @@ public class RecordingManager : MonoBehaviour
 
     public void NoTrackerHandling()
     {
-        uiManager.MenuScene();
+        uiManager.HandleCameraError();
     }
 }

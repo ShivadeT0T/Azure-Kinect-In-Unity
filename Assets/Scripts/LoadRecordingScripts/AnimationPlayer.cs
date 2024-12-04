@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class AnimationPlayer : MonoBehaviour
 {
     public GameObject m_tracker;
+    public LoadUI uiManager;
     private List<BackgroundDataNoDepth> frames;
     private int frameCounter = 0;
     private int frameLimit;
@@ -25,6 +26,7 @@ public class AnimationPlayer : MonoBehaviour
     {
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
         frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
+        if (!frames.Any()) uiManager.HandleFileError();
         frameLimit = frames.Count;
 
         timeSlider.onValueChanged.AddListener(HandleTimeSliderValueChanged);

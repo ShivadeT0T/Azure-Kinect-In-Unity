@@ -127,7 +127,7 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
         {
             Debug.Log($"catching exception for background thread {e.Message}");
             token.ThrowIfCancellationRequested();
-            isOffline = true;
+            IsOffline = true;
         }
     }
 }

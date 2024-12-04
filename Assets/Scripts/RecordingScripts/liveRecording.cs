@@ -42,7 +42,7 @@ public class liveRecording : MonoBehaviour
                 }
             }
         }
-        if (m_skeletalTrackingProvider.isOffline)
+        if (m_skeletalTrackingProvider.IsOffline)
         {
             manager.NoTrackerHandling();
         }

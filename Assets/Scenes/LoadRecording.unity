@@ -1664,6 +1664,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tracker: {fileID: 212085668}
+  uiManager: {fileID: 1756980221}
   timeSlider: {fileID: 671306541}
 --- !u!1 &1636234191
 GameObject:
