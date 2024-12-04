@@ -5,11 +5,19 @@ public class LoadUI : MonoBehaviour
 {
     public GameObject VideoPlayerUi;
     public AnimationPlayer animationPlayer;
+    public GameObject InfoUi;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
-            VideoPlayerUi.SetActive(!VideoPlayerUi.activeSelf);
+        {
+            VideoPlayerUi.SetActive(false);
+            InfoUi.SetActive(false);
+        }
+            
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+            VideoPlayerUi.SetActive(true);
 
         if (Input.GetKeyDown(KeyCode.Space))
             animationPlayer.PlayPause();
@@ -31,5 +39,10 @@ public class LoadUI : MonoBehaviour
         InfoBetweenScenes.ErrorMessage = "File could not be found or it contains incorrect data. Please make sure the file exists or has correct data.";
         InfoBetweenScenes.menuState = MenuState.ERROR;
         MenuScene();
+    }
+
+    public void ToggleInfo()
+    {
+        InfoUi.SetActive(!InfoUi.activeSelf);
     }
 }

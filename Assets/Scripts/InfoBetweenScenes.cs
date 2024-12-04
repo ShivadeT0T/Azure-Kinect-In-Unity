@@ -6,7 +6,8 @@
 
 public static class InfoBetweenScenes
 {
-    public static string AnimationFileName = "incorrectFile";
+    // "incorrectFile" "test"
+    public static string AnimationFileName = "test";
     public static string ErrorMessage;
     public static MenuState menuState = MenuState.NORMAL;
 }
