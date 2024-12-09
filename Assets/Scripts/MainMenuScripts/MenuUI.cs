@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum DialogType
 {
@@ -20,11 +23,30 @@ public class AnimationDetails
         Date = date;
     }
 }
+
+public class ModelDetails
+{
+    public string Name;
+
+    public ModelDetails(string name)
+    {
+        Name = name;
+    }
+}
 public class MenuUI : MonoBehaviour
 {
+
+    //Model canvas and its related objects
+    public List<ModelDetails> modelList;
+    public ToggleGroup toggleGroup;
+    public ModelDetailsView modelDetailsPrefab;
+    public GameObject modelScrollViewContent;
+    public GameObject modelScreenCanvas;
+
+
     public List<AnimationDetails> animationList;
 
-    public GameObject scrollViewContent;
+    public GameObject animationScrollViewContent;
     public AnimationDetailsView animationDetailsPrefab;
 
     public GameObject LoadScreenCanvas;
@@ -35,6 +57,7 @@ public class MenuUI : MonoBehaviour
     public GameObject ErrorDialog;
     public TMP_Text errorMessage;
 
+
     public DialogType dialogType = DialogType.DEFAULT;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -43,6 +66,12 @@ public class MenuUI : MonoBehaviour
         foreach (AnimationFile file in FileManager.LoadFilesInfo())
         {
             animationList.Add(new AnimationDetails(file.Name, file.CreationTime.ToString("yyyy-MM-dd HH:mm")));
+        }
+
+        modelList = new List<ModelDetails>();
+        foreach (var model in Resources.LoadAll("PrefabModels", typeof(GameObject)))
+        {
+            modelList.Add(new ModelDetails(model.name));
         }
 
         switch (InfoBetweenScenes.menuState)
@@ -97,9 +126,17 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(LoadScreenCanvas);
     }
 
-    public void ClearPrefab()
+    public void ClearAnimationPrefab()
     {
-        foreach (Transform transf in scrollViewContent.transform)
+        foreach (Transform transf in animationScrollViewContent.transform)
+        {
+            Destroy(transf.gameObject);
+        }
+    }
+
+    public void ClearModelPrefab()
+    {
+        foreach (Transform transf in modelScrollViewContent.transform)
         {
             Destroy(transf.gameObject);
         }
@@ -108,7 +145,7 @@ public class MenuUI : MonoBehaviour
     public void DisplayAnimationDetailsList()
     {
 
-        ClearPrefab();
+        ClearAnimationPrefab();
         ShowCanvas(LoadScreenCanvas);
         
         foreach (AnimationDetails animationDetails in animationList)
@@ -116,7 +153,34 @@ public class MenuUI : MonoBehaviour
             AnimationDetailsView animDetailObj = Instantiate(animationDetailsPrefab) as AnimationDetailsView;
             animDetailObj.gameObject.SetActive(true);
             animDetailObj.UpdateAnimationDetails(animationDetails);
-            animDetailObj.transform.SetParent(scrollViewContent.transform, false);
+            animDetailObj.transform.SetParent(animationScrollViewContent.transform, false);
         }
     }
+
+    public void DisplayModelDetailsList()
+    {
+        ClearModelPrefab();
+        ShowCanvas(modelScreenCanvas);
+
+        foreach(ModelDetails modelDetails in modelList)
+        {
+            ModelDetailsView modelDetailObj = Instantiate(modelDetailsPrefab) as ModelDetailsView;
+            toggleGroup.RegisterToggle(modelDetailObj.selfToggle);
+            modelDetailObj.gameObject.SetActive(true);
+            modelDetailObj.UpdateModelDetails(modelDetails);
+            modelDetailObj.transform.SetParent(modelScrollViewContent.transform, false);
+
+            if (modelDetailObj.Name.text == InfoBetweenScenes.prefabModelName) modelDetailObj.selfToggle.isOn = true;
+        }
+    }
+
+    public void ConfirmModel()
+    {
+        Toggle selectedToggle = toggleGroup.ActiveToggles().FirstOrDefault();
+
+        InfoBetweenScenes.prefabModelName = selectedToggle.GetComponent<ModelDetailsView>().Name.text;
+        CloseCanvas(modelScreenCanvas);
+    }
+
+
 }

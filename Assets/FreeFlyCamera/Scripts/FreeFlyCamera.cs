@@ -97,11 +97,11 @@ public class FreeFlyCamera : MonoBehaviour
 #endif
 
 
-    //private void Start()
-    //{
-    //    _initPosition = transform.position;
-    //    _initRotation = transform.eulerAngles;
-    //}
+    private void Start()
+    {
+        _initPosition = transform.position;
+        _initRotation = transform.eulerAngles;
+    }
 
 
     // Apply requested cursor state

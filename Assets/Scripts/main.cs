@@ -15,13 +15,13 @@ public class main : MonoBehaviour
     public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
 
     // Handler for animation frames
-    private FramesHandler m_framesHandler;
+    //private FramesHandler m_framesHandler;
 
     void Start()
     {
         // Give desired frame limit for the animation to the frames handler
-        const int frameLimit = 450;
-        m_framesHandler = new FramesHandler(HandlerType.SAVE);
+        //const int frameLimit = 450;
+        //m_framesHandler = new FramesHandler(HandlerType.SAVE);
 
         //tracker ids needed for when there are two trackers
         const int TRACKER_ID = 0;
@@ -37,7 +37,7 @@ public class main : MonoBehaviour
             {
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
-                    m_framesHandler.ProcessFrame(m_lastFrameData);
+                    //m_framesHandler.ProcessFrame(m_lastFrameData);
                     m_tracker.GetComponent<TrackerHandler>().updateTracker(m_lastFrameData);
                 }
             }
@@ -51,7 +51,7 @@ public class main : MonoBehaviour
     void OnApplicationQuit()
     {
         DisposingOfObjects();
-        m_framesHandler.SaveAnimation("dummy");
+        //m_framesHandler.SaveAnimation("dummy");
     }
 
 

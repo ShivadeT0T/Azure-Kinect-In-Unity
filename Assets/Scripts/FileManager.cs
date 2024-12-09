@@ -11,14 +11,14 @@ using UnityEngine;
 
 public class FileManager
 {
-    public static string directory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
+    public static string animationDirectory = Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Animations";
     public static void CreateJsonFile(string fileName, string json)
     {
         try
         {
             string jsonFile = fileName + ".json";
 
-            string filePath = Path.Combine(directory, jsonFile);
+            string filePath = Path.Combine(animationDirectory, jsonFile);
             File.WriteAllText(filePath, json);
             Debug.Log("Writing JSON file successful");
         } catch (Exception e)
@@ -35,7 +35,7 @@ public class FileManager
         {
             string jsonFile = fileName + ".json";
 
-            string filePath = Path.Combine(directory, jsonFile);
+            string filePath = Path.Combine(animationDirectory, jsonFile);
             animationJson = File.ReadAllText(filePath);
             Debug.Log("Loading JSON file successful");
 
@@ -52,8 +52,8 @@ public class FileManager
             string jsonFile = fileName + ".json";
             string metaFile = fileName + ".json.meta";
 
-            string jsonFilePath = Path.Combine(directory, jsonFile);
-            string metaFilePath = Path.Combine(directory, metaFile);
+            string jsonFilePath = Path.Combine(animationDirectory, jsonFile);
+            string metaFilePath = Path.Combine(animationDirectory, metaFile);
             File.Delete(jsonFilePath);
             File.Delete(metaFilePath);
             Debug.Log("JSON file deleted successfully");
@@ -69,7 +69,7 @@ public class FileManager
         List<AnimationFile> animationFiles = new List<AnimationFile>();
         try
         {
-            var jsonFiles = Directory.EnumerateFiles(directory, "*.json");
+            var jsonFiles = Directory.EnumerateFiles(animationDirectory, "*.json");
             foreach(string file in jsonFiles)
             {
                 string name = Path.GetFileNameWithoutExtension(file);
