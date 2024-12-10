@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,9 @@ public class RecordingManager : MonoBehaviour
 
     public GameObject replayObj;
     public replayRecording replayScript;
+
+    public TrackerHandler skeleton;
+    public GameObject model;
 
     public RecordingUI uiManager;
 
@@ -117,5 +121,11 @@ public class RecordingManager : MonoBehaviour
     public void NoTrackerHandling()
     {
         uiManager.HandleCameraError();
+    }
+
+    public void ToggleSkeleton()
+    {
+        skeleton.turnOnOffSkeletons();
+        model.SetActive(!model.activeSelf);
     }
 }

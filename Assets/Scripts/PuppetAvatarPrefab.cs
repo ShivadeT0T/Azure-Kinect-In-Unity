@@ -12,6 +12,7 @@ public class PuppetAvatarPrefab : MonoBehaviour
     public GameObject RootPosition;
     public Transform CharacterRootTransform;
     public float OffsetY;
+    public float OffsetX;
     public float OffsetZ;
     private static HumanBodyBones MapKinectJoint(JointId joint)
     {
@@ -46,6 +47,7 @@ public class PuppetAvatarPrefab : MonoBehaviour
     {
         KinectDevice = GameObject.FindGameObjectWithTag("Tracker").GetComponent<TrackerHandler>();
         RootPosition = GameObject.FindGameObjectWithTag("Pelvis");
+        CharacterRootTransform.position = GameObject.FindGameObjectWithTag("Tracker").transform.position;
         PuppetAnimator = GetComponent<Animator>();
         Transform _rootJointTransform = CharacterRootTransform;
 
@@ -98,7 +100,7 @@ public class PuppetAvatarPrefab : MonoBehaviour
                 if (j == 0)
                 {
                     // character root plus translation reading from the kinect, plus the offset from the script public variables
-                    finalJoint.position = CharacterRootTransform.position + new Vector3(RootPosition.transform.localPosition.x, RootPosition.transform.localPosition.y + OffsetY, RootPosition.transform.localPosition.z - OffsetZ);
+                    finalJoint.position = CharacterRootTransform.position + new Vector3(RootPosition.transform.localPosition.x + OffsetX, RootPosition.transform.localPosition.y + OffsetY, RootPosition.transform.localPosition.z - OffsetZ);
                 }
             }
         }

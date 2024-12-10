@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class RecordingUI : MonoBehaviour
 {
 
+    // Enable camera movmement
+    private bool cameraOn = true;
+
     // User inputs
     public TMP_InputField Seconds;
     public TMP_InputField FileName;
@@ -26,6 +29,19 @@ public class RecordingUI : MonoBehaviour
 
     // Logic script
     public RecordingManager recordingManager;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H) && cameraOn)
+        {
+            RecordingSetup.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && cameraOn)
+        {
+            RecordingSetup.SetActive(true);
+        }
+    }
 
     public void CloseCanvas(GameObject canvas)
     {
@@ -61,6 +77,7 @@ public class RecordingUI : MonoBehaviour
         }
 
         recordingManager.SetUpRecording(seconds, PrecisionToggle.isOn);
+        cameraOn = false;
         CloseCanvas(RecordingSetup);
         ShowCanvas(CountdownCanvas);
     }

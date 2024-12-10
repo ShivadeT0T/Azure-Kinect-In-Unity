@@ -115,5 +115,6 @@ crashlytics-build.properties
 # More stuff related with Azure
 
 **/Assets/Plugins
+**/Assets/StreamingAssets/Animations
 *.dll
 *onnx
