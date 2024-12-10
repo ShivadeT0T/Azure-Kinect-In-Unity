@@ -804,6 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a2f8764bc2bd8f4ba3675109dba4940, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  main: {fileID: 1916360205}
 --- !u!1001 &1661018069
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1092,7 +1093,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1619398859}
         m_TargetAssemblyTypeName: UI, Assembly-CSharp
-        m_MethodName: BackToMenuButton
+        m_MethodName: HideShowModel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1140,6 +1141,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1830507214}
   m_CullTransparentMesh: 1
+--- !u!1 &1916360205 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6917378017648623391, guid: 4f08c0830dd2b7445b04e9deb828ac3e, type: 3}
+  m_PrefabInstance: {fileID: 991358598}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2119003114
 GameObject:
   m_ObjectHideFlags: 0

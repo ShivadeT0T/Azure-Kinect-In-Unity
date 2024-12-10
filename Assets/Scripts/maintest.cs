@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,8 +10,8 @@ using UnityEngine.SceneManagement;
 public class maintest : MonoBehaviour
 {
     public GameObject m_tracker;
-    public string filePath = Path.Combine(Application.streamingAssetsPath, "test2.json");
-    public List<BackgroundDataNoDepth> frames;
+    public IReadOnlyCollection<BackgroundDataNoDepth> frames;
+    public FramesHandler m_framesHandler;
 
 
     private void Awake()
@@ -21,9 +20,16 @@ public class maintest : MonoBehaviour
     }
     void Start()
     {
+        m_framesHandler = new FramesHandler(HandlerType.LOAD);
         try
         {
-            frames = ConfigLoader.Instance.Frames;
+            frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName);
+            Debug.Log(frames.Count);
+            List<AnimationFile> files = FileManager.LoadFilesInfo().ToList();
+            foreach (AnimationFile file in files)
+            {
+                Debug.Log($"{file.Name} : {file.CreationTime.ToString()}");
+            }
             StartCoroutine(Waiter());
         } catch (Exception e)
         {

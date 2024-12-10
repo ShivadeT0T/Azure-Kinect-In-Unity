@@ -10,6 +10,11 @@ public class UI : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void HideShowModel()
+    {
+        main.SetActive(!main.activeSelf);
+    }
+
     public void LoadAnimation()
     {
         if (!main.activeInHierarchy)

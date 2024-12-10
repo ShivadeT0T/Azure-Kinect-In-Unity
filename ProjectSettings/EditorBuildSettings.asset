@@ -6,11 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Main Menu.unity
+    path: Assets/Scenes/MainMenu.unity
     guid: 68ab7cdd5227efe47bc209b9ca9e08cd
   - enabled: 1
     path: Assets/Scenes/PuppetMaster.unity
     guid: 52868bbfdacb2874d80a87928c362433
+  - enabled: 1
+    path: Assets/Scenes/LoadRecording.unity
+    guid: 126ff4912c0406d43ad255482e658e0e
+  - enabled: 1
+    path: Assets/Scenes/SaveRecording.unity
+    guid: 62b2b663100a1b84eba0aca812c277c0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
