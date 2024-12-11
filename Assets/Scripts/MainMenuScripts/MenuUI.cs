@@ -182,5 +182,9 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(modelScreenCanvas);
     }
 
-
+    public void QuitApplication()
+    {
+        Application.Quit();
+        Debug.Log("Quit button pressed");
+    }
 }

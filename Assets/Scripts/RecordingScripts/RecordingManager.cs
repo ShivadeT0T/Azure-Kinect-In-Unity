@@ -70,8 +70,9 @@ public class RecordingManager : MonoBehaviour
         RecordingOn = true;
     }
 
-    public void ProcessRecordingFrame(BackgroundDataNoDepth frame)
+    public void ProcessRecordingFrame(BackgroundDataNoDepth frame, bool smooth)
     {
+        framesHandler.SmoothenBody(frame, smooth);
         if (!RecordingOn) return;
         UpdateSeconds();
         if (!framesHandler.ProcessingFrames(frame))

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Concurrent;
@@ -23,6 +24,7 @@ public class FramesHandler
     public BackgroundDataNoDepth[] FramesArray;
     public ConcurrentQueue<BackgroundDataNoDepth> FramesProcessor;
     public List<BackgroundDataNoDepth> FramesList;
+    public SmootherModified Smoother;
 
     public FramesHandler(HandlerType handlerType)
     {
@@ -31,6 +33,7 @@ public class FramesHandler
             case HandlerType.SAVE:
                 FramesProcessor = new ConcurrentQueue<BackgroundDataNoDepth>();
                 FramesList = new List<BackgroundDataNoDepth>();
+                Smoother = new SmootherModified();
                 break;
             case HandlerType.LOAD:
                 FramesList = new List<BackgroundDataNoDepth>();
@@ -117,4 +120,11 @@ public class FramesHandler
         return FramesProcessor;
     }
 
+    public void SmoothenBody(BackgroundDataNoDepth frame, bool smooth)
+    {
+        for (int i = 0; i < (int)frame.NumOfBodies; i++)
+        {
+           frame.Bodies[i] = Smoother.ReceiveNewBodyData(frame.Bodies[i], smooth);
+        }
+    }
 }

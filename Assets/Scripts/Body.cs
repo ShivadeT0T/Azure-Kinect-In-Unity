@@ -80,6 +80,8 @@ public struct Body : ISerializable
         }
     }
 
+    #region serialization
+
     public Body(SerializationInfo info, StreamingContext context)
     {
         float[] JointPositions3D_X = (float[])info.GetValue("JointPositions3D_X", typeof(float[]));
@@ -179,5 +181,83 @@ public struct Body : ISerializable
         info.AddValue("Length", Length, typeof(int));
         info.AddValue("Id", Id, typeof(uint));
     }
+    #endregion
+
+    #region overriden operators
+
+    // Add two body positions to create new
+
+    public static Body operator +(Body b, Body c)
+    {
+        int maxJointsLength = b.Length;
+        Body a = new Body(maxJointsLength);
+
+        for (int bodyPoint = 0; bodyPoint < b.Length; bodyPoint++)
+        {
+            a.JointPositions3D[bodyPoint] = b.JointPositions3D[bodyPoint] + c.JointPositions3D[bodyPoint];
+            a.JointPositions2D[bodyPoint] = b.JointPositions2D[bodyPoint] + c.JointPositions2D[bodyPoint];
+            a.JointRotations[bodyPoint] = 
+                new System.Numerics.Quaternion(
+                    b.JointRotations[bodyPoint].X + c.JointRotations[bodyPoint].X,
+                b.JointRotations[bodyPoint].Y + c.JointRotations[bodyPoint].Y, 
+                b.JointRotations[bodyPoint].Z + c.JointRotations[bodyPoint].Z,
+                b.JointRotations[bodyPoint].W + c.JointRotations[bodyPoint].W
+                );
+            a.JointPrecisions[bodyPoint] = b.JointPrecisions[bodyPoint];
+        }
+        a.Length = maxJointsLength;
+        a.Id = b.Id;
+
+        return a;
+    }
+
+    public static Body operator -(Body b, Body c)
+    {
+        int maxJointsLength = b.Length;
+        Body a = new Body(maxJointsLength);
+
+        for (int bodyPoint = 0; bodyPoint < b.Length; bodyPoint++)
+        {
+            a.JointPositions3D[bodyPoint] = b.JointPositions3D[bodyPoint] - c.JointPositions3D[bodyPoint];
+            a.JointPositions2D[bodyPoint] = b.JointPositions2D[bodyPoint] - c.JointPositions2D[bodyPoint];
+            a.JointRotations[bodyPoint] =
+            new System.Numerics.Quaternion(
+                    b.JointRotations[bodyPoint].X - c.JointRotations[bodyPoint].X,
+                b.JointRotations[bodyPoint].Y - c.JointRotations[bodyPoint].Y, 
+                b.JointRotations[bodyPoint].Z - c.JointRotations[bodyPoint].Z,
+                b.JointRotations[bodyPoint].W - c.JointRotations[bodyPoint].W
+                );
+            a.JointPrecisions[bodyPoint] = b.JointPrecisions[bodyPoint];
+        }
+        a.Length = maxJointsLength;
+        a.Id = b.Id;
+
+        return a;
+    }
+
+    public static Body operator /(Body lhs, float rhs)
+    {
+        int maxJointsLength = lhs.Length;
+        Body a = new Body(maxJointsLength);
+        for (int bodyPoint = 0; bodyPoint < lhs.Length; bodyPoint++)
+        {
+            a.JointPositions3D[bodyPoint] = lhs.JointPositions3D[bodyPoint] / rhs;
+            a.JointPositions2D[bodyPoint] = lhs.JointPositions2D[bodyPoint] / rhs;
+            a.JointRotations[bodyPoint] =
+                new System.Numerics.Quaternion(
+                    lhs.JointRotations[bodyPoint].X / rhs,
+                lhs.JointRotations[bodyPoint].Y / rhs,
+                lhs.JointRotations[bodyPoint].Z / rhs,
+                lhs.JointRotations[bodyPoint].W / rhs
+                );
+            a.JointPrecisions[bodyPoint] = lhs.JointPrecisions[bodyPoint];
+        }
+        a.Length = maxJointsLength;
+        a.Id = lhs.Id;
+
+        return a;
+    }
+
+    #endregion
 }
 

@@ -1,4 +1,3 @@
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +8,9 @@ public class liveRecording : MonoBehaviour
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
     public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
     private float timeStamp;
+
+    [SerializeField]
+    public bool isSmooth = false;
 
     // The "brain" of the scene which will get frames from this script
     public RecordingManager manager;
@@ -33,7 +35,7 @@ public class liveRecording : MonoBehaviour
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
                     m_lastFrameData.TimestampInMs -= timeStamp;
-                    manager.ProcessRecordingFrame(m_lastFrameData);
+                    manager.ProcessRecordingFrame(m_lastFrameData, isSmooth);
                     m_tracker.GetComponent<TrackerHandler>().updateTracker(m_lastFrameData);
                 }
                 else
