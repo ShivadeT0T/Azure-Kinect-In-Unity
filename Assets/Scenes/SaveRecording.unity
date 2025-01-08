@@ -1566,6 +1566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tracker: {fileID: 987132035}
+  isSmooth: 0
   manager: {fileID: 1129461274}
 --- !u!1 &615223558
 GameObject:

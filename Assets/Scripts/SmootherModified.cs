@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 public class SmootherModified
 {
@@ -56,8 +57,42 @@ public class SmootherModified
         }
 
         return smoothing && hasEnoughForSmoothing
-            ? smoothenedData[smoothenedData.Count - 1] / (float)NumberSmoothingFrames
+            ? CalculateAverage(smoothenedData[0], smoothenedData[smoothenedData.Count - 1], newData, NumberSmoothingFrames)
             : rawData[rawData.Count - 1];
+    }
+    
+    // Calculates the average of the smoothenedData
+    public Body CalculateAverage(Body firstData, Body cumulativeData, Body nextData, int addAmount)
+    {
+        float floatAmount = (float)addAmount;
+        int maxJointsLength = nextData.Length;
+        Body avgData = new Body(maxJointsLength);
+
+        for (int bodyPoint = 0; bodyPoint < nextData.Length; bodyPoint++)
+        {
+            avgData.JointPositions3D[bodyPoint] = cumulativeData.JointPositions3D[bodyPoint] / floatAmount;
+            avgData.JointPositions2D[bodyPoint] = cumulativeData.JointPositions2D[bodyPoint] / floatAmount;
+
+            Vector4 cumulativeVector = new Vector4
+                (
+                cumulativeData.JointRotations[bodyPoint].X,
+                cumulativeData.JointRotations[bodyPoint].Y,
+                cumulativeData.JointRotations[bodyPoint].Z,
+                cumulativeData.JointRotations[bodyPoint].W
+                );
+
+            avgData.JointRotations[bodyPoint] =
+                QuaternionMath.AverageQuaternion
+                (
+                    ref cumulativeVector,
+                    nextData.JointRotations[bodyPoint],
+                    firstData.JointRotations[bodyPoint],
+                    addAmount
+                );
+
+            avgData.JointPrecisions[bodyPoint] = cumulativeData.JointPrecisions[bodyPoint];
+        }
+        return avgData;
     }
 
     // Deletes old position data from list which do not have more impact on smoothing algorithm.
@@ -72,4 +107,5 @@ public class SmootherModified
             smoothenedData.RemoveRange(0, smoothenedData.Count - NumberSmoothingFrames);
         }
     }
+
 }

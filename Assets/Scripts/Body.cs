@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.Kinect.BodyTracking;
 using Microsoft.Azure.Kinect.Sensor;
 using System;
-using System.Numerics;
 using UnityEngine;
 using System.Runtime.Serialization;
 
@@ -203,10 +202,11 @@ public struct Body : ISerializable
                 b.JointRotations[bodyPoint].Z + c.JointRotations[bodyPoint].Z,
                 b.JointRotations[bodyPoint].W + c.JointRotations[bodyPoint].W
                 );
-            a.JointPrecisions[bodyPoint] = b.JointPrecisions[bodyPoint];
+            //a.JointRotations[bodyPoint] = c.JointRotations[bodyPoint];
+            a.JointPrecisions[bodyPoint] = c.JointPrecisions[bodyPoint];
         }
         a.Length = maxJointsLength;
-        a.Id = b.Id;
+        a.Id = c.Id;
 
         return a;
     }
@@ -227,36 +227,38 @@ public struct Body : ISerializable
                 b.JointRotations[bodyPoint].Z - c.JointRotations[bodyPoint].Z,
                 b.JointRotations[bodyPoint].W - c.JointRotations[bodyPoint].W
                 );
-            a.JointPrecisions[bodyPoint] = b.JointPrecisions[bodyPoint];
+            a.JointRotations[bodyPoint] = c.JointRotations[bodyPoint];
+            a.JointPrecisions[bodyPoint] = c.JointPrecisions[bodyPoint];
         }
         a.Length = maxJointsLength;
-        a.Id = b.Id;
+        a.Id = c.Id;
 
         return a;
     }
 
-    public static Body operator /(Body lhs, float rhs)
-    {
-        int maxJointsLength = lhs.Length;
-        Body a = new Body(maxJointsLength);
-        for (int bodyPoint = 0; bodyPoint < lhs.Length; bodyPoint++)
-        {
-            a.JointPositions3D[bodyPoint] = lhs.JointPositions3D[bodyPoint] / rhs;
-            a.JointPositions2D[bodyPoint] = lhs.JointPositions2D[bodyPoint] / rhs;
-            a.JointRotations[bodyPoint] =
-                new System.Numerics.Quaternion(
-                    lhs.JointRotations[bodyPoint].X / rhs,
-                lhs.JointRotations[bodyPoint].Y / rhs,
-                lhs.JointRotations[bodyPoint].Z / rhs,
-                lhs.JointRotations[bodyPoint].W / rhs
-                );
-            a.JointPrecisions[bodyPoint] = lhs.JointPrecisions[bodyPoint];
-        }
-        a.Length = maxJointsLength;
-        a.Id = lhs.Id;
+    //public static Body operator /(Body lhs, float rhs)
+    //{
+    //    int maxJointsLength = lhs.Length;
+    //    Body a = new Body(maxJointsLength);
+    //    for (int bodyPoint = 0; bodyPoint < lhs.Length; bodyPoint++)
+    //    {
+    //        a.JointPositions3D[bodyPoint] = lhs.JointPositions3D[bodyPoint] / rhs;
+    //        a.JointPositions2D[bodyPoint] = lhs.JointPositions2D[bodyPoint] / rhs;
+    //        a.JointRotations[bodyPoint] =
+    //            new System.Numerics.Quaternion(
+    //                lhs.JointRotations[bodyPoint].X / rhs,
+    //            lhs.JointRotations[bodyPoint].Y / rhs,
+    //            lhs.JointRotations[bodyPoint].Z / rhs,
+    //            lhs.JointRotations[bodyPoint].W / rhs
+    //            );
+    //        a.JointRotations[bodyPoint] = lhs.JointRotations[bodyPoint];
+    //        a.JointPrecisions[bodyPoint] = lhs.JointPrecisions[bodyPoint];
+    //    }
+    //    a.Length = maxJointsLength;
+    //    a.Id = lhs.Id;
 
-        return a;
-    }
+    //    return a;
+    //}
 
     #endregion
 }
