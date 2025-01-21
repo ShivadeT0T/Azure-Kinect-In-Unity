@@ -12,7 +12,7 @@ public class main : MonoBehaviour
     // Handler for SkeletalTracking thread.
     public GameObject m_tracker;
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
-    public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
+    public BackgroundData m_lastFrameData = new BackgroundData();
 
     // Handler for animation frames
     //private FramesHandler m_framesHandler;

@@ -70,7 +70,7 @@ public class RecordingManager : MonoBehaviour
         RecordingOn = true;
     }
 
-    public void ProcessRecordingFrame(BackgroundDataNoDepth frame)
+    public void ProcessRecordingFrame(BackgroundData frame)
     {
         if (!RecordingOn) return;
         UpdateSeconds();

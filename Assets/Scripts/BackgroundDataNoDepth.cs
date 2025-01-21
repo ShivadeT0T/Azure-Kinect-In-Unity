@@ -60,5 +60,22 @@ public class BackgroundDataNoDepth : ISerializable
 
         return copiedData;
     }
+
+    public static BackgroundDataNoDepth DeepCopy(BackgroundData copyFromData)
+    {
+        BackgroundDataNoDepth copiedData = new BackgroundDataNoDepth();
+        ulong numOfBodies = copyFromData.NumOfBodies;
+        copiedData.NumOfBodies = copyFromData.NumOfBodies;
+
+        copiedData.TimestampInMs = copyFromData.TimestampInMs;
+
+        for (int i = 0; i < (int)numOfBodies; i++)
+        {
+            copiedData.Bodies[i] = Body.DeepCopy(copyFromData.Bodies[i]);
+        }
+
+        return copiedData;
+    }
+
 }
 

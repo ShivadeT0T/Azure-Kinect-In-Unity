@@ -6,8 +6,9 @@ public class liveRecording : MonoBehaviour
 {
     // Handler for SkeletalTracking thread.
     public GameObject m_tracker;
+    public CameraLiveFeed m_camera;
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
-    public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
+    public BackgroundData m_lastFrameData = new BackgroundData();
     private float timeStamp;
 
     // The "brain" of the scene which will get frames from this script
@@ -30,6 +31,8 @@ public class liveRecording : MonoBehaviour
         {
             if (m_skeletalTrackingProvider.GetCurrentFrameData(ref m_lastFrameData))
             {
+
+                m_camera.updateLiveFeed(m_lastFrameData);
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
                     m_lastFrameData.TimestampInMs -= timeStamp;
