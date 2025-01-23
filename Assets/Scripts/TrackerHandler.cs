@@ -111,7 +111,7 @@ public class TrackerHandler : MonoBehaviour
         renderSkeleton(skeleton, 0);
     }
 
-    int findIndexFromId(BackgroundData frameData, int id)
+    int findIndexFromId(BackgroundDataNoDepth frameData, int id)
     {
         int retIndex = -1;
         for (int i = 0; i < (int)frameData.NumOfBodies; i++)

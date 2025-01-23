@@ -11,15 +11,18 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
 {
     bool readFirstFrame = false;
     TimeSpan initialTimestamp;
-
-    public SkeletalTrackingProvider(int id) : base(id)
-    {
-        Debug.Log("in the skeleton provider constructor");
-    }
-
     System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter { get; set; } = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
     public Stream RawDataLoggingFile = null;
+
+    private CameraLiveFeed cameraLiveFeed;
+
+    public SkeletalTrackingProvider(int id, CameraLiveFeed cameraLiveFeed) : base(id)
+    {
+        Debug.Log("in the skeleton provider constructor");
+        this.cameraLiveFeed = cameraLiveFeed;
+    }
+
 
     protected override void RunBackgroundThreadAsync(int id, CancellationToken token)
     {
@@ -36,7 +39,8 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                 device.StartCameras(new DeviceConfiguration()
                 {
                     CameraFPS = FPS.FPS30,
-                    ColorResolution = ColorResolution.Off,
+                    ColorResolution = ColorResolution.R720p,
+                    ColorFormat = ImageFormat.ColorBGRA32,
                     DepthMode = DepthMode.NFOV_Unbinned,
                     WiredSyncMode = WiredSyncMode.Standalone,
                 });
@@ -75,15 +79,21 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                                     currentFrameData.Bodies[i].CopyFromBodyTrackingSdk(frame.GetBody(i), deviceCalibration);
                                 }
 
+
                                 // Store depth image.
                                 Capture bodyFrameCapture = frame.Capture;
                                 Image depthImage = bodyFrameCapture.Depth;
+
+                                // Get color image and update camera live feed
+                                Image colorImage = bodyFrameCapture.Color;
+                                cameraLiveFeed.UpdateLiveFeed(colorImage);
+
                                 if (!readFirstFrame)
                                 {
                                     readFirstFrame = true;
                                     initialTimestamp = depthImage.DeviceTimestamp;
                                 }
-                                currentFrameData.TimestampInMs = (float)(depthImage.DeviceTimestamp - initialTimestamp).TotalMilliseconds;
+                                //currentFrameData.TimestampInMs = (float)(depthImage.DeviceTimestamp - initialTimestamp).TotalMilliseconds;
                                 //currentFrameData.DepthImageWidth = depthImage.WidthPixels;
                                 //currentFrameData.DepthImageHeight = depthImage.HeightPixels;
 
