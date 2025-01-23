@@ -11,6 +11,8 @@ public class BackgroundData : ISerializable
     // Depth image frame. 
     public byte[] DepthImage { get; set; }
 
+    public ushort[] depthData { get; set; }
+
     public int DepthImageWidth { get; set; }
     public int DepthImageHeight { get; set; }
     public int DepthImageSize { get; set; }

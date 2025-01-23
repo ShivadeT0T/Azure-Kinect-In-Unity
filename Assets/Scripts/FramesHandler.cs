@@ -50,14 +50,14 @@ public class FramesHandler
         FramesProcessor.Clear();
     }
 
-    public bool ProcessingFrames(BackgroundData frame)
+    public bool ProcessingFrames(BackgroundDataNoDepth frame)
     {
         if (LastFrameReached) return false;
         ProcessFrame(frame);
         return true;
     }
 
-    public void ProcessFrame(BackgroundData frame)
+    public void ProcessFrame(BackgroundDataNoDepth frame)
     {
         if (!recordingSetup) return;
 

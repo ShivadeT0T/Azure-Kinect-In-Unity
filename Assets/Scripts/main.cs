@@ -11,8 +11,9 @@ public class main : MonoBehaviour
 {
     // Handler for SkeletalTracking thread.
     public GameObject m_tracker;
+    public CameraLiveFeed dummy;
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
-    public BackgroundData m_lastFrameData = new BackgroundData();
+    public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
 
     // Handler for animation frames
     //private FramesHandler m_framesHandler;
@@ -25,7 +26,7 @@ public class main : MonoBehaviour
 
         //tracker ids needed for when there are two trackers
         const int TRACKER_ID = 0;
-        m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
+        m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID, dummy);
         SceneManager.activeSceneChanged += ChangedActiveScene;
     }
 

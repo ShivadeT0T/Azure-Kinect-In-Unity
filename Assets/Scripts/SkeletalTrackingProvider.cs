@@ -11,15 +11,18 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
 {
     bool readFirstFrame = false;
     TimeSpan initialTimestamp;
-
-    public SkeletalTrackingProvider(int id) : base(id)
-    {
-        Debug.Log("in the skeleton provider constructor");
-    }
-
     System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter { get; set; } = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
     public Stream RawDataLoggingFile = null;
+
+    private CameraLiveFeed cameraLiveFeed;
+
+    public SkeletalTrackingProvider(int id, CameraLiveFeed cameraLiveFeed) : base(id)
+    {
+        Debug.Log("in the skeleton provider constructor");
+        this.cameraLiveFeed = cameraLiveFeed;
+    }
+
 
     protected override void RunBackgroundThreadAsync(int id, CancellationToken token)
     {
@@ -28,7 +31,7 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
             UnityEngine.Debug.Log("Starting body tracker background thread.");
 
             // Buffer allocations.
-            BackgroundData currentFrameData = new BackgroundData();
+            BackgroundDataNoDepth currentFrameData = new BackgroundDataNoDepth();
 
             // Open device.
             using (Device device = Device.Open(id))
@@ -36,7 +39,8 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                 device.StartCameras(new DeviceConfiguration()
                 {
                     CameraFPS = FPS.FPS30,
-                    ColorResolution = ColorResolution.Off,
+                    ColorResolution = ColorResolution.R720p,
+                    ColorFormat = ImageFormat.ColorBGRA32,
                     DepthMode = DepthMode.NFOV_Unbinned,
                     WiredSyncMode = WiredSyncMode.Standalone,
                 });
@@ -75,33 +79,38 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                                     currentFrameData.Bodies[i].CopyFromBodyTrackingSdk(frame.GetBody(i), deviceCalibration);
                                 }
 
+
                                 // Store depth image.
                                 Capture bodyFrameCapture = frame.Capture;
                                 Image depthImage = bodyFrameCapture.Depth;
-                                Debug.Log(depthImage.Format);
+
+                                // Get color image and update camera live feed
+                                Image colorImage = bodyFrameCapture.Color;
+                                cameraLiveFeed.UpdateLiveFeed(colorImage);
+
                                 if (!readFirstFrame)
                                 {
                                     readFirstFrame = true;
                                     initialTimestamp = depthImage.DeviceTimestamp;
                                 }
-                                currentFrameData.TimestampInMs = (float)(depthImage.DeviceTimestamp - initialTimestamp).TotalMilliseconds;
-                                currentFrameData.DepthImageWidth = depthImage.WidthPixels;
-                                currentFrameData.DepthImageHeight = depthImage.HeightPixels;
+                                //currentFrameData.TimestampInMs = (float)(depthImage.DeviceTimestamp - initialTimestamp).TotalMilliseconds;
+                                //currentFrameData.DepthImageWidth = depthImage.WidthPixels;
+                                //currentFrameData.DepthImageHeight = depthImage.HeightPixels;
 
                                 // Read image data from the SDK.
-                                var depthFrame = MemoryMarshal.Cast<byte, ushort>(depthImage.Memory.Span);
+                                //var depthFrame = MemoryMarshal.Cast<byte, ushort>(depthImage.Memory.Span);
 
                                 // Repack data and store image data.
-                                int byteCounter = 0;
-                                currentFrameData.DepthImageSize = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight * 3;
+                                //int byteCounter = 0;
+                                //currentFrameData.DepthImageSize = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight * 3;
 
-                                for (int it = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight - 1; it > 0; it--)
-                                {
-                                    byte b = (byte)(depthFrame[it] / (ConfigLoader.Instance.Configs.SkeletalTracking.MaximumDisplayedDepthInMillimeters) * 255);
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                    currentFrameData.DepthImage[byteCounter++] = b;
-                                }
+                                //for (int it = currentFrameData.DepthImageWidth * currentFrameData.DepthImageHeight - 1; it > 0; it--)
+                                //{
+                                //    byte b = (byte)(depthFrame[it] / (ConfigLoader.Instance.Configs.SkeletalTracking.MaximumDisplayedDepthInMillimeters) * 255);
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //    currentFrameData.DepthImage[byteCounter++] = b;
+                                //}
 
                                 if (RawDataLoggingFile != null && RawDataLoggingFile.CanWrite)
                                 {

@@ -111,17 +111,7 @@ public class TrackerHandler : MonoBehaviour
         renderSkeleton(skeleton, 0);
     }
 
-    public void updateTracker(BackgroundData trackerFrameData)
-    {
-        //this is an array in case you want to get the n closest bodies
-        int closestBody = findClosestTrackedBody(trackerFrameData);
-
-        // render the closest body
-        Body skeleton = trackerFrameData.Bodies[closestBody];
-        renderSkeleton(skeleton, 0);
-    }
-
-    int findIndexFromId(BackgroundData frameData, int id)
+    int findIndexFromId(BackgroundDataNoDepth frameData, int id)
     {
         int retIndex = -1;
         for (int i = 0; i < (int)frameData.NumOfBodies; i++)
@@ -136,24 +126,6 @@ public class TrackerHandler : MonoBehaviour
     }
 
     private int findClosestTrackedBody(BackgroundDataNoDepth trackerFrameData)
-    {
-        int closestBody = -1;
-        const float MAX_DISTANCE = 5000.0f;
-        float minDistanceFromKinect = MAX_DISTANCE;
-        for (int i = 0; i < (int)trackerFrameData.NumOfBodies; i++)
-        {
-            var pelvisPosition = trackerFrameData.Bodies[i].JointPositions3D[(int)JointId.Pelvis];
-            Vector3 pelvisPos = new Vector3((float)pelvisPosition.X, (float)pelvisPosition.Y, (float)pelvisPosition.Z);
-            if (pelvisPos.magnitude < minDistanceFromKinect)
-            {
-                closestBody = i;
-                minDistanceFromKinect = pelvisPos.magnitude;
-            }
-        }
-        return closestBody;
-    }
-
-    private int findClosestTrackedBody(BackgroundData trackerFrameData)
     {
         int closestBody = -1;
         const float MAX_DISTANCE = 5000.0f;

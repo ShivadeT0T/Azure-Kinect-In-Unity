@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 public abstract class BackgroundDataProvider:IDisposable
 {
-    private BackgroundData m_frameBackgroundData = new BackgroundData();
+    private BackgroundDataNoDepth m_frameBackgroundData = new BackgroundDataNoDepth();
     private bool m_latest = false;
     object m_lockObj = new object();
     public bool IsRunning { get; set; } = false;
@@ -30,7 +30,7 @@ public abstract class BackgroundDataProvider:IDisposable
 
     protected abstract void RunBackgroundThreadAsync(int id, CancellationToken token);
 
-    public void SetCurrentFrameData(ref BackgroundData currentFrameData)
+    public void SetCurrentFrameData(ref BackgroundDataNoDepth currentFrameData)
     {
         lock (m_lockObj)
         {
@@ -41,7 +41,7 @@ public abstract class BackgroundDataProvider:IDisposable
         }
     }
 
-    public bool GetCurrentFrameData(ref BackgroundData dataBuffer)
+    public bool GetCurrentFrameData(ref BackgroundDataNoDepth dataBuffer)
     {
         lock (m_lockObj)
         {

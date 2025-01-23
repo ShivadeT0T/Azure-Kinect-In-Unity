@@ -8,7 +8,7 @@ public class liveRecording : MonoBehaviour
     public GameObject m_tracker;
     public CameraLiveFeed m_camera;
     private SkeletalTrackingProvider m_skeletalTrackingProvider;
-    public BackgroundData m_lastFrameData = new BackgroundData();
+    public BackgroundDataNoDepth m_lastFrameData = new BackgroundDataNoDepth();
     private float timeStamp;
 
     // The "brain" of the scene which will get frames from this script
@@ -19,7 +19,7 @@ public class liveRecording : MonoBehaviour
         timeStamp = 0;
         //tracker ids needed for when there are two trackers
         const int TRACKER_ID = 0;
-        m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
+        m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID, m_camera);
         SceneManager.activeSceneChanged += ChangedActiveScene;
         //if (!m_skeletalTrackingProvider.IsRunning) manager.NoTrackerHandling();
     }
@@ -31,8 +31,6 @@ public class liveRecording : MonoBehaviour
         {
             if (m_skeletalTrackingProvider.GetCurrentFrameData(ref m_lastFrameData))
             {
-
-                m_camera.updateLiveFeed(m_lastFrameData);
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
                     m_lastFrameData.TimestampInMs -= timeStamp;
@@ -79,13 +77,14 @@ public class liveRecording : MonoBehaviour
         {
             m_skeletalTrackingProvider.Dispose();
         }
+        m_camera.EnableImage(false);
     }
-    public void NewSkeletalTracking()
-    {
-        if (m_skeletalTrackingProvider == null)
-        {
-            const int TRACKER_ID = 0;
-            m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
-        }
-    }
+    //public void NewSkeletalTracking()
+    //{
+    //    if (m_skeletalTrackingProvider == null)
+    //    {
+    //        const int TRACKER_ID = 0;
+    //        m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
+    //    }
+    //}
 }
