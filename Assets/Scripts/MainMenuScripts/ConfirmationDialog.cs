@@ -17,6 +17,9 @@ public class ConfirmationDialog : MonoBehaviour
         dType = dialogType;
         switch (dialogType)
         {
+            case DialogType.GAME:
+                message.text = $"Practice \"{FormatString(animationObj.Name)}\" File?";
+                break;
             case DialogType.LOAD:
                 message.text = $"Load \"{FormatString(animationObj.Name)}\" File?";
                 break;
@@ -34,6 +37,9 @@ public class ConfirmationDialog : MonoBehaviour
     {
         switch (dType)
         {
+            case DialogType.GAME:
+                uiScript.GameScene(m_animationObj.Name);
+                break;
             case DialogType.LOAD:
                 uiScript.LoadScene(m_animationObj.Name);
                 break;

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public enum DialogType
 {
+    GAME,
     LOAD,
     DELETE,
     DEFAULT
@@ -48,6 +49,10 @@ public class MenuUI : MonoBehaviour
 
     public GameObject animationScrollViewContent;
     public AnimationDetailsView animationDetailsPrefab;
+
+    public GameObject practiceScrollViewContent;
+    public AnimationDetailsView practiceDetailsPrefab;
+    public GameObject PracticeScreenCanvas;
 
     public GameObject LoadScreenCanvas;
 
@@ -106,6 +111,12 @@ public class MenuUI : MonoBehaviour
         ShowCanvas(DialogCanvas);
     }
 
+    public void GameScene(string fileName)
+    {
+        InfoBetweenScenes.AnimationFileName = fileName;
+        SceneManager.LoadScene("GameScene");
+    }
+
     public void LoadScene(string fileName)
     {
         InfoBetweenScenes.AnimationFileName = fileName;
@@ -126,6 +137,14 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(LoadScreenCanvas);
     }
 
+    public void ClearGamePrefab()
+    {
+        foreach (Transform transf in practiceScrollViewContent.transform)
+        {
+            Destroy(transf.gameObject);
+        }
+    }
+
     public void ClearAnimationPrefab()
     {
         foreach (Transform transf in animationScrollViewContent.transform)
@@ -139,6 +158,21 @@ public class MenuUI : MonoBehaviour
         foreach (Transform transf in modelScrollViewContent.transform)
         {
             Destroy(transf.gameObject);
+        }
+    }
+
+    public void DisplayGameDetailsList()
+    {
+
+        ClearGamePrefab();
+        ShowCanvas(PracticeScreenCanvas);
+
+        foreach (AnimationDetails animationDetails in animationList)
+        {
+            AnimationDetailsView animDetailObj = Instantiate(practiceDetailsPrefab) as AnimationDetailsView;
+            animDetailObj.gameObject.SetActive(true);
+            animDetailObj.UpdateAnimationDetails(animationDetails);
+            animDetailObj.transform.SetParent(practiceScrollViewContent.transform, false);
         }
     }
 
