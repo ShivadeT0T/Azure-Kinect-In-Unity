@@ -20,13 +20,15 @@ public class AnimationPlayer : MonoBehaviour
     [SerializeField] Slider timeSlider;
     private bool isDragging = false;
 
+    // Time variables
     [SerializeField]
-    private int fps = 30;
+    public float fps = 30f;
+    private float timer;
+    private float timePerFrame;
 
-    private void Awake()
-    {
-        Application.targetFrameRate = fps;
-    }
+    [SerializeField]
+    public bool lerp = true;
+
 
     private void Start()
     {
@@ -38,6 +40,8 @@ public class AnimationPlayer : MonoBehaviour
         timeSlider.onValueChanged.AddListener(HandleTimeSliderValueChanged);
         timeSlider.maxValue = frameLimit - 1;
 
+        timePerFrame = 1f / fps;
+
         UpdateModel();
     }
 
@@ -45,17 +49,20 @@ public class AnimationPlayer : MonoBehaviour
     {
         if (!isDragging && ReplayON)
         {
-            StartCoroutine(Waiter());
-            timeSlider.value = frameCounter;
+            timer += Time.deltaTime;
+            if (timer >= timePerFrame)
+            {
+                Debug.Log(timer);
+                timer -= timePerFrame;
+                UpdateModel();
+                frameCounter++;
+                timeSlider.value = frameCounter;
+            }
+            else if (lerp)
+            {
+                UpdateModelLerp(timer / timePerFrame);
+            }
         }
-    }
-
-    IEnumerator Waiter()
-    {
-        //Debug.Log(frameCounter);
-        UpdateModel();
-        frameCounter++;
-        yield return new WaitForEndOfFrame();
     }
 
     private void UpdateModel()
@@ -64,6 +71,17 @@ public class AnimationPlayer : MonoBehaviour
 
         if (frameCounter < 0) frameCounter = 0;
         m_tracker.GetComponent<TrackerHandler>().updateTracker(frames[frameCounter]);
+    }
+
+    private void UpdateModelLerp(float t)
+    {
+
+        if (frameCounter < 0) frameCounter = 0;
+
+        if (frameCounter < frameLimit - 1)
+        {
+            m_tracker.GetComponent<TrackerHandler>().updateTrackerLerp(frames[frameCounter], frames[frameCounter + 1], t);
+        }
     }
 
     public void PlayPause()
@@ -83,11 +101,8 @@ public class AnimationPlayer : MonoBehaviour
 
     public void HandleTimeSliderValueChanged(float value)
     {
-        if (isDragging)
-        {
-            frameCounter = (int) value;
-            UpdateModel();
-        }
+        frameCounter = (int)value;
+        UpdateModel();
     }
 
     public void IncrementVideo(bool forward)
@@ -97,19 +112,21 @@ public class AnimationPlayer : MonoBehaviour
         UpdateModel();
     }
 
-     public void ChangePlaybackSpeed(int val)
-   {
-        if (val == 0) fps = 60;
+    public void ChangePlaybackSpeed(int val)
+    {
+        if (val == 0) fps = 60f;
 
-        if (val == 1) fps = 45;
+        if (val == 1) fps = 45f;
 
-        if (val == 2) fps = 30;
+        if (val == 2) fps = 30f;
 
-        if (val == 3) fps = 23;
+        if (val == 3) fps = 23f;
 
-        if (val == 4) fps = 15;
+        if (val == 4) fps = 15f;
         Debug.Log(fps);
-        Application.targetFrameRate = fps;
+
+        timePerFrame = 1f / fps;
+        timer = 0;
     }
 
     public void ToggleLoop(bool toggle)

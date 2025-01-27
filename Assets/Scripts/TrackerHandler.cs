@@ -110,7 +110,17 @@ public class TrackerHandler : MonoBehaviour
         Body skeleton = trackerFrameData.Bodies[closestBody];
         renderSkeleton(skeleton, 0);
     }
+    public void updateTrackerLerp(BackgroundDataNoDepth trackerFrameData1, BackgroundDataNoDepth trackerFrameData2, float t)
+    {
+        //this is an array in case you want to get the n closest bodies
+        int closestBody1 = findClosestTrackedBody(trackerFrameData1);
+        int closestBody2 = findClosestTrackedBody(trackerFrameData2);
 
+        // render the closest body
+        Body skeleton1 = trackerFrameData1.Bodies[closestBody1];
+        Body skeleton2 = trackerFrameData2.Bodies[closestBody2];
+        renderSkeletonLerp(skeleton1,skeleton2, t, 0);
+    }
     int findIndexFromId(BackgroundDataNoDepth frameData, int id)
     {
         int retIndex = -1;
@@ -173,6 +183,51 @@ public class TrackerHandler : MonoBehaviour
             {
                 Vector3 parentTrackerSpacePosition = new Vector3(skeleton.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].X,
                     -skeleton.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Y, skeleton.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Z);
+                Vector3 boneDirectionTrackerSpace = jointPos - parentTrackerSpacePosition;
+                Vector3 boneDirectionWorldSpace = transform.rotation * boneDirectionTrackerSpace;
+                Vector3 boneDirectionLocalSpace = Quaternion.Inverse(transform.GetChild(skeletonNumber).GetChild(jointNum).rotation) * Vector3.Normalize(boneDirectionWorldSpace);
+                transform.GetChild(skeletonNumber).GetChild(jointNum).GetChild(boneChildNum).localScale = new Vector3(1, 20.0f * 0.5f * boneDirectionWorldSpace.magnitude, 1);
+                transform.GetChild(skeletonNumber).GetChild(jointNum).GetChild(boneChildNum).localRotation = Quaternion.FromToRotation(Vector3.up, boneDirectionLocalSpace);
+                transform.GetChild(skeletonNumber).GetChild(jointNum).GetChild(boneChildNum).position = transform.GetChild(skeletonNumber).GetChild(jointNum).position - 0.5f * boneDirectionWorldSpace;
+            }
+            else
+            {
+                transform.GetChild(skeletonNumber).GetChild(jointNum).GetChild(boneChildNum).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void renderSkeletonLerp(Body skeleton1, Body skeleton2, float t, int skeletonNumber)
+    {
+        for (int jointNum = 0; jointNum < (int)JointId.Count; jointNum++)
+        {
+            Vector3 jointPos1 = new Vector3(skeleton1.JointPositions3D[jointNum].X, -skeleton1.JointPositions3D[jointNum].Y, skeleton1.JointPositions3D[jointNum].Z);
+            Vector3 jointPos2 = new Vector3(skeleton2.JointPositions3D[jointNum].X, -skeleton2.JointPositions3D[jointNum].Y, skeleton2.JointPositions3D[jointNum].Z);
+            Vector3 jointPos = Vector3.Lerp(jointPos1, jointPos2, t);
+
+            Vector3 offsetPosition = transform.rotation * jointPos;
+            Vector3 positionInTrackerRootSpace = transform.position + offsetPosition;
+
+            Quaternion jointRot1 = Y_180_FLIP * new Quaternion(skeleton1.JointRotations[jointNum].X, skeleton1.JointRotations[jointNum].Y,
+                skeleton1.JointRotations[jointNum].Z, skeleton1.JointRotations[jointNum].W) * Quaternion.Inverse(basisJointMap[(JointId)jointNum]);
+            Quaternion jointRot2 = Y_180_FLIP * new Quaternion(skeleton2.JointRotations[jointNum].X, skeleton2.JointRotations[jointNum].Y,
+                skeleton2.JointRotations[jointNum].Z, skeleton2.JointRotations[jointNum].W) * Quaternion.Inverse(basisJointMap[(JointId)jointNum]);
+            Quaternion jointRot = Quaternion.Lerp(jointRot1, jointRot2, t);
+
+            absoluteJointRotations[jointNum] = jointRot;
+            // these are absolute body space because each joint has the body root for a parent in the scene graph
+            transform.GetChild(skeletonNumber).GetChild(jointNum).localPosition = jointPos;
+            transform.GetChild(skeletonNumber).GetChild(jointNum).localRotation = jointRot;
+
+            const int boneChildNum = 0;
+            if (parentJointMap[(JointId)jointNum] != JointId.Head && parentJointMap[(JointId)jointNum] != JointId.Count)
+            {
+                Vector3 parentTracker1 = new Vector3(skeleton1.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].X,
+                    -skeleton1.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Y, skeleton1.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Z);
+                Vector3 parentTracker2 = new Vector3(skeleton2.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].X,
+                    -skeleton2.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Y, skeleton2.JointPositions3D[(int)parentJointMap[(JointId)jointNum]].Z);
+                Vector3 parentTrackerSpacePosition = Vector3.Lerp(parentTracker1, parentTracker2, t);
+
                 Vector3 boneDirectionTrackerSpace = jointPos - parentTrackerSpacePosition;
                 Vector3 boneDirectionWorldSpace = transform.rotation * boneDirectionTrackerSpace;
                 Vector3 boneDirectionLocalSpace = Quaternion.Inverse(transform.GetChild(skeletonNumber).GetChild(jointNum).rotation) * Vector3.Normalize(boneDirectionWorldSpace);
