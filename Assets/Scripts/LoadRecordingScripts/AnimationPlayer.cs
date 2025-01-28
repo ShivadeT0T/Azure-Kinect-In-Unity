@@ -29,6 +29,10 @@ public class AnimationPlayer : MonoBehaviour
     [SerializeField]
     public bool lerp = true;
 
+    private void Awake()
+    {
+        Application.targetFrameRate = 90;
+    }
 
     private void Start()
     {
@@ -52,7 +56,7 @@ public class AnimationPlayer : MonoBehaviour
             timer += Time.deltaTime;
             if (timer >= timePerFrame)
             {
-                Debug.Log(timer);
+                //Debug.Log(timer);
                 timer -= timePerFrame;
                 UpdateModel();
                 frameCounter++;
@@ -132,5 +136,10 @@ public class AnimationPlayer : MonoBehaviour
     public void ToggleLoop(bool toggle)
     {
         LoopOn = toggle;
+    }
+
+    public void ToggleLerp(bool toggle)
+    {
+        lerp = toggle;
     }
 }
