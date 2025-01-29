@@ -2,18 +2,14 @@
 
 public class CameraFlipper : MonoBehaviour
 {
-    Camera cam;
+    public Camera cam;
 
     [Tooltip("Flip by x axis")]
     public bool flipByX;
 
-    void Start()
-    {
-        cam = GetComponent<Camera>();
-    }
-
     // Flip fron camera to be aligned in directions with depth image on scene.
-    void OnPreCull()
+
+    private void Start()
     {
         if (flipByX)
         {
@@ -21,7 +17,10 @@ public class CameraFlipper : MonoBehaviour
             cam.ResetProjectionMatrix();
             Vector3 scale = new Vector3(-1, 1, 1);
             cam.projectionMatrix = cam.projectionMatrix * Matrix4x4.Scale(scale);
-        }
+        }        
+    }
+    void OnPreCull()
+    {
     }
 
     void OnPreRender()

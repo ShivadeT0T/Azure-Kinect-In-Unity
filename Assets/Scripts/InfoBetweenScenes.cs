@@ -14,4 +14,6 @@ public static class InfoBetweenScenes
     public static MenuState menuState = MenuState.NORMAL;
     public static string prefabDirectory = "PrefabModels" + Path.DirectorySeparatorChar;
     public static string prefabModelName = "jasper";
+    // Intervals between poses in seconds
+    public static int poseInterval = 1;
 }
