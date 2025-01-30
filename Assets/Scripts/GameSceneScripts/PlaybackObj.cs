@@ -24,6 +24,10 @@ public class PlaybackObj : MonoBehaviour
     private float timePerFrame;
     private int poseFrame;
 
+    public PoseSpawnScript spawnScript;
+    private int counterForPose = 0;
+    private bool allTextures = false;
+
     void Start()
     {
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
@@ -45,13 +49,26 @@ public class PlaybackObj : MonoBehaviour
                 //Debug.Log(timer);
                 timer -= timePerFrame;
                 UpdatePlaybackObj();
-                PoseGenerator();
             }
             else
             {
                 UpdateModelLerp(timer / timePerFrame);
             }
 
+        }
+
+        if (!allTextures)
+        {
+            if(counterForPose == 1)
+            {
+                counterForPose = 0;
+                PoseGenerator();
+            }
+            else
+            {
+                counterForPose++;
+
+            }
         }
     }
 
@@ -80,5 +97,10 @@ public class PlaybackObj : MonoBehaviour
         {
             m_poseTracker.GetComponent<TrackerHandler>().updateTracker(poses[curFrame / (int) fps % poses.Count]);
         }
+    }
+
+    private void GeneratePoseTexture()
+    {
+        spawnScript.CapturePose();
     }
 }
