@@ -6,9 +6,10 @@ public class PoseSpawnScript : MonoBehaviour
 {
 
     public Camera poseCamera;
-    public List<Texture2D> posesTexture = new List<Texture2D>();
+    public Queue<Texture2D> posesTexture = new Queue<Texture2D>();
 
     private RenderTexture renderTexture;
+    public GameObject pose;
 
     void Start()
     {
@@ -26,8 +27,16 @@ public class PoseSpawnScript : MonoBehaviour
 
         capturedTexture.Apply(capturedTexture);
 
-        posesTexture.Add(capturedTexture);
+        posesTexture.Enqueue(capturedTexture);
 
         RenderTexture.active = null;
+    }
+
+    public void SpawnPose()
+    {
+        if (posesTexture.Count != 0)
+        {
+            Instantiate(pose, transform.position, transform.rotation);
+        }
     }
 }

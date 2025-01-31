@@ -9,17 +9,19 @@ public class PlaybackObj : MonoBehaviour
 {
     public GameObject m_tracker;
     public GameObject m_poseTracker;
+    public GameObject hitzonePosition;
 
     private List<BackgroundDataNoDepth> frames;
-    private List<BackgroundDataNoDepth> poses;
+    private Queue<BackgroundDataNoDepth> poses;
+    private List<IndividualPose> poseObjects;
     private int curFrame = 0;
     private int frameLimit;
     private FramesHandler m_framesHandler;
 
-    private bool replayOn = true;
+    private bool replayOn = false;
 
     [SerializeField]
-    public float fps = 30f;
+    public int fps = 30;
     private float timer;
     private float timePerFrame;
     private int poseFrame;
@@ -33,7 +35,7 @@ public class PlaybackObj : MonoBehaviour
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
         frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
-        poses = frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList();
+        poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
         frameLimit = frames.Count;
 
         timePerFrame = 1f / fps;
@@ -41,6 +43,27 @@ public class PlaybackObj : MonoBehaviour
     }
     void Update()
     {
+        // Generate poses before starting the playback
+        if (!allTextures)
+        {
+            if (counterForPose == 1)
+            {
+                counterForPose = 0;
+                UpdatePose();
+            }
+            else
+            {
+                counterForPose++;
+                GeneratePoseTexture();
+            }
+
+        }
+        else
+        {
+            replayOn = true;
+        }
+
+        // Playback starts
         if (replayOn)
         {
             timer += Time.deltaTime;
@@ -57,19 +80,6 @@ public class PlaybackObj : MonoBehaviour
 
         }
 
-        if (!allTextures)
-        {
-            if(counterForPose == 1)
-            {
-                counterForPose = 0;
-                PoseGenerator();
-            }
-            else
-            {
-                counterForPose++;
-
-            }
-        }
     }
 
     private void UpdatePlaybackObj()
@@ -91,16 +101,38 @@ public class PlaybackObj : MonoBehaviour
         }
     }
 
-    private void PoseGenerator()
+    private void UpdatePose()
     {
-        if (curFrame % (int) fps == 0)
+        if (poses.Count != 0)
         {
-            m_poseTracker.GetComponent<TrackerHandler>().updateTracker(poses[curFrame / (int) fps % poses.Count]);
+            m_poseTracker.GetComponent<TrackerHandler>().updateTracker(poses.Dequeue());
+        }
+        else
+        {
+            allTextures = true;
         }
     }
 
     private void GeneratePoseTexture()
     {
         spawnScript.CapturePose();
+    }
+
+    public void InsertToPoseObj(IndividualPose poseObj)
+    {
+        poseObjects.Add(poseObj);
+    }
+
+    public void MovePose(float t)
+    {
+        foreach (IndividualPose pose in poseObjects)
+        {
+            pose.MoveSelf(t);
+        }
+    }
+
+    public void CheckPoseObj()
+    {
+        // TODO: Logic for checking if poseObj reached final frame and remove and destroy it if so
     }
 }
