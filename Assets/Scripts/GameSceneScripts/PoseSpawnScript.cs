@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PoseSpawnScript : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PoseSpawnScript : MonoBehaviour
 
     private RenderTexture renderTexture;
     public GameObject pose;
+    public PlaybackObj mainScript;
 
     void Start()
     {
@@ -32,11 +34,28 @@ public class PoseSpawnScript : MonoBehaviour
         RenderTexture.active = null;
     }
 
-    public void SpawnPose()
+    public bool SpawnPose()
     {
         if (posesTexture.Count != 0)
         {
-            Instantiate(pose, transform.position, transform.rotation);
+            GameObject poseObj = Instantiate(pose, transform.position, transform.rotation);
+            Texture2D texture = posesTexture.Dequeue();
+            texture.Apply();
+            poseObj.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(1.0f, 1.0f));
+            mainScript.poseObjects.Add(poseObj);
+            return true;
         }
+
+        Debug.Log("NO MORE POSES TO SPAWN!");
+        return false;
+    }
+
+    public Texture2D RetrievePoseTexture()
+    {
+        if (posesTexture.Count != 0)
+        {
+            return posesTexture.Dequeue();
+        }
+        return null;
     }
 }

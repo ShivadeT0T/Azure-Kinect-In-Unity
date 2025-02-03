@@ -324,7 +324,6 @@ GameObject:
   m_Component:
   - component: {fileID: 169418710}
   - component: {fileID: 169418709}
-  - component: {fileID: 169418708}
   - component: {fileID: 169418707}
   - component: {fileID: 169418711}
   m_Layer: 0
@@ -378,14 +377,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &169418708
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 169418706}
-  m_Enabled: 1
 --- !u!20 &169418709
 Camera:
   m_ObjectHideFlags: 0
@@ -506,6 +497,7 @@ MonoBehaviour:
   m_poseTracker: {fileID: 2035852021}
   hitzonePosition: {fileID: 1998233666}
   fps: 30
+  poseFpsOffset: 15
   spawnScript: {fileID: 1434940259}
 --- !u!4 &684072402
 Transform:
@@ -1602,6 +1594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   poseCamera: {fileID: 169418709}
   pose: {fileID: 7749578283637736119, guid: aad0e47615c21524c843273261252010, type: 3}
+  mainScript: {fileID: 684072401}
 --- !u!1 &1528680203 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 210279052, guid: 019b917704c3c29478d778e143d411d2, type: 3}

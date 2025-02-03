@@ -13,7 +13,7 @@ public class PlaybackObj : MonoBehaviour
 
     private List<BackgroundDataNoDepth> frames;
     private Queue<BackgroundDataNoDepth> poses;
-    private List<IndividualPose> poseObjects;
+    public List<GameObject> poseObjects;
     private int curFrame = 0;
     private int frameLimit;
     private FramesHandler m_framesHandler;
@@ -22,6 +22,7 @@ public class PlaybackObj : MonoBehaviour
 
     [SerializeField]
     public int fps = 30;
+    public int poseFpsOffset = 15;
     private float timer;
     private float timePerFrame;
     private int poseFrame;
@@ -29,6 +30,15 @@ public class PlaybackObj : MonoBehaviour
     public PoseSpawnScript spawnScript;
     private int counterForPose = 0;
     private bool allTextures = false;
+    private bool morePoses = true;
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (poseFpsOffset > fps)
+            poseFpsOffset = fps;
+    }
+#endif
 
     void Start()
     {
@@ -46,15 +56,20 @@ public class PlaybackObj : MonoBehaviour
         // Generate poses before starting the playback
         if (!allTextures)
         {
-            if (counterForPose == 1)
+            timer += Time.deltaTime;
+            if(timer >= timePerFrame)
             {
-                counterForPose = 0;
-                UpdatePose();
-            }
-            else
-            {
-                counterForPose++;
-                GeneratePoseTexture();
+                timer -= timePerFrame;
+                if (counterForPose == 1)
+                {
+                    counterForPose = 0;
+                    UpdatePose();
+                }
+                else
+                {
+                    counterForPose++;
+                    GeneratePoseTexture();
+                }
             }
 
         }
@@ -72,10 +87,16 @@ public class PlaybackObj : MonoBehaviour
                 //Debug.Log(timer);
                 timer -= timePerFrame;
                 UpdatePlaybackObj();
+                if (curFrame % poseFpsOffset == 0)
+                {
+                    if(morePoses) GeneratePoseObj();
+                }
+                MovePoses(1);
             }
             else
             {
                 UpdateModelLerp(timer / timePerFrame);
+                MovePoses(timer / timePerFrame);
             }
 
         }
@@ -118,21 +139,42 @@ public class PlaybackObj : MonoBehaviour
         spawnScript.CapturePose();
     }
 
-    public void InsertToPoseObj(IndividualPose poseObj)
+    public void InsertToPoseObj(GameObject poseObj)
     {
         poseObjects.Add(poseObj);
     }
 
-    public void MovePose(float t)
+    public Texture2D GetTexture()
     {
-        foreach (IndividualPose pose in poseObjects)
+        return spawnScript.RetrievePoseTexture();
+    }
+
+    public void MovePoses(float t)
+    {
+        if (poseObjects.Count != 0)
         {
-            pose.MoveSelf(t);
+            foreach (GameObject pose in poseObjects)
+            {
+                pose.GetComponent<IndividualPose>().MoveSelf(t);
+            }
         }
     }
 
     public void CheckPoseObj()
     {
         // TODO: Logic for checking if poseObj reached final frame and remove and destroy it if so
+        foreach (GameObject pose in poseObjects)
+        {
+            if (pose.GetComponent<IndividualPose>().HasReachedFinalFrame())
+            {
+                pose.GetComponent<IndividualPose>().DisposeSelf();
+                poseObjects.Remove(pose);
+            }
+        }
+    }
+
+    public void GeneratePoseObj()
+    {
+        morePoses = spawnScript.SpawnPose();
     }
 }
