@@ -12,16 +12,17 @@ public class PoseSpawnScript : MonoBehaviour
     private RenderTexture renderTexture;
     public GameObject pose;
     public PlaybackObj mainScript;
+    public GameObject self;
 
     void Start()
     {
-        renderTexture = new RenderTexture(500, 500, 0);
+        renderTexture = new RenderTexture(500, 500, 24); 
         poseCamera.targetTexture = renderTexture;
     }
 
     public void CapturePose()
     {
-        Texture2D capturedTexture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.R8, false);
+        Texture2D capturedTexture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.BGRA32, false);
 
         RenderTexture.active = renderTexture;
 
@@ -39,9 +40,11 @@ public class PoseSpawnScript : MonoBehaviour
         if (posesTexture.Count != 0)
         {
             GameObject poseObj = Instantiate(pose, transform.position, transform.rotation);
-            Texture2D texture = posesTexture.Dequeue();
-            texture.Apply();
-            poseObj.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(1.0f, 1.0f));
+            poseObj.GetComponent<IndividualPose>().SetFrame(mainScript.fps + mainScript.poseFpsOffset);
+            poseObj.transform.SetParent(self.transform, true);
+            poseObj.GetComponent<IndividualPose>().SetPositions(transform.position, new Vector3(mainScript.hitzonePosition.transform.position.x, transform.position.y, transform.position.z));
+            poseObj.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            poseObj.GetComponent<IndividualPose>().ApplyImageSelf(posesTexture.Dequeue());
             mainScript.poseObjects.Add(poseObj);
             return true;
         }

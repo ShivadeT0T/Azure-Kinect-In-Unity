@@ -92,6 +92,7 @@ public class PlaybackObj : MonoBehaviour
                     if(morePoses) GeneratePoseObj();
                 }
                 MovePoses(1);
+                CheckPoseObj();
             }
             else
             {
@@ -163,7 +164,7 @@ public class PlaybackObj : MonoBehaviour
     public void CheckPoseObj()
     {
         // TODO: Logic for checking if poseObj reached final frame and remove and destroy it if so
-        foreach (GameObject pose in poseObjects)
+        foreach (GameObject pose in poseObjects.ToList())
         {
             if (pose.GetComponent<IndividualPose>().HasReachedFinalFrame())
             {

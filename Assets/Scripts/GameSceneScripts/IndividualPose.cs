@@ -7,22 +7,21 @@ public class IndividualPose : MonoBehaviour
     
     private int finalFrame;
     private int frameCount = 1;
-    private Vector3 initialPos, finalPos;
-    private PlaybackObj mainScript;
+    private Vector3 initialPos;
+    private Vector3 finalPos;
+    public Image imageTexture;
 
-
-    void Start()
+    public void SetFrame(int final)
     {
-        mainScript = GameObject.FindGameObjectWithTag("MainGameScript").GetComponent<PlaybackObj>();
-        finalFrame = mainScript.fps + mainScript.poseFpsOffset;
-        initialPos = transform.position;
-        var hitZone = mainScript.hitzonePosition;
-        finalPos = new Vector3(hitZone.transform.position.x, hitZone.transform.position.y, initialPos.z);
+        finalFrame = final;
     }
     public void MoveSelf(float t)
     {
-        Debug.Log(finalFrame);
-        transform.position = Vector3.Lerp(initialPos, finalPos, frameCount/finalFrame * t);
+        //Debug.Log(frameCount);
+        //Debug.Log(finalFrame);
+        float time = (float) frameCount / (float) finalFrame * t;
+        //Debug.Log(time);
+        transform.position = Vector3.Lerp(initialPos, finalPos, time);
     }
 
     public bool HasReachedFinalFrame()
@@ -39,5 +38,18 @@ public class IndividualPose : MonoBehaviour
     public void DisposeSelf()
     {
         Destroy(this.gameObject);
+    }
+
+    public void ApplyImageSelf(Texture2D texture)
+    {
+        texture.Apply();
+        imageTexture.sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(1.0f, 1.0f));
+
+    }
+
+    public void SetPositions(Vector3 init, Vector3 final)
+    {
+        initialPos = init;
+        finalPos = final;
     }
 }
