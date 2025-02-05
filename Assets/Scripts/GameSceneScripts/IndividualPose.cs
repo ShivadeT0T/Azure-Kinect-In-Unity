@@ -19,14 +19,17 @@ public class IndividualPose : MonoBehaviour
     {
         //Debug.Log(frameCount);
         //Debug.Log(finalFrame);
-        float time = (float) frameCount / (float) finalFrame * t;
-        //Debug.Log(time);
+        Debug.Log("t value: " + t);
+        float division = (float)frameCount/finalFrame;
+        float time = division * t;
+        Debug.Log(time);
         transform.position = Vector3.Lerp(initialPos, finalPos, time);
     }
 
     public bool HasReachedFinalFrame()
     {
-        if (frameCount <= finalFrame)
+        //Debug.Log(frameCount);
+        if (frameCount < finalFrame)
         {
             frameCount++;
             return false;

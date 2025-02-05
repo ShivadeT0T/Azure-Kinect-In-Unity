@@ -1,4 +1,5 @@
 using NUnit.Framework.Api;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -23,6 +24,7 @@ public class PlaybackObj : MonoBehaviour
     [SerializeField]
     public int fps = 30;
     public int poseFpsOffset = 15;
+    public int firstPoseFrame;
     private float timer;
     private float timePerFrame;
     private int poseFrame;
@@ -43,63 +45,73 @@ public class PlaybackObj : MonoBehaviour
     void Start()
     {
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
+        firstPoseFrame = poseFrame + poseFpsOffset - 1;
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
         frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
-        poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
+        poses = new Queue<BackgroundDataNoDepth>();
+        poses.Enqueue(frames[firstPoseFrame]);
+        frames.Where((item, index) => (index - poseFpsOffset) % poseFrame == poseFrame - 1 && index > firstPoseFrame).ToList().ForEach(pose => poses.Enqueue(pose));
+        //poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
         frameLimit = frames.Count;
+        Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", frames.Count, poses.Count));
 
         timePerFrame = 1f / fps;
 
+        StartCoroutine(CustomUpdate());
+
     }
-    void Update()
+    IEnumerator CustomUpdate()
     {
-        // Generate poses before starting the playback
-        if (!allTextures)
+        while (true)
         {
-            timer += Time.deltaTime;
-            if(timer >= timePerFrame)
+            // Generate poses before starting the playback
+            if (!allTextures)
             {
-                timer -= timePerFrame;
-                if (counterForPose == 1)
+                timer += Time.deltaTime;
+                if (timer >= timePerFrame)
                 {
-                    counterForPose = 0;
-                    UpdatePose();
+                    timer -= timePerFrame;
+                    if (counterForPose == 1)
+                    {
+                        counterForPose = 0;
+                        GeneratePoseTexture();
+                    }
+                    else
+                    {
+                        counterForPose++;
+                        UpdatePose();
+                    }
+                }
+
+            }
+
+            // Playback starts
+            else
+            {
+                timer += Time.deltaTime;
+                if (timer >= timePerFrame)
+                {
+                    //Debug.Log(timer);
+                    timer -= timePerFrame;
+                    UpdatePlaybackObj();
+                    if (curFrame % poseFrame == 0)
+                    {
+                        if (morePoses)
+                        {
+                            GeneratePoseObj();
+                        }
+                    }
+                    CheckPoseObj();
                 }
                 else
                 {
-                    counterForPose++;
-                    GeneratePoseTexture();
+                    UpdateModelLerp(timer / timePerFrame);
+                    MovePoses(timer / timePerFrame);
                 }
+
             }
 
-        }
-        else
-        {
-            replayOn = true;
-        }
-
-        // Playback starts
-        if (replayOn)
-        {
-            timer += Time.deltaTime;
-            if (timer >= timePerFrame)
-            {
-                //Debug.Log(timer);
-                timer -= timePerFrame;
-                UpdatePlaybackObj();
-                if (curFrame % poseFpsOffset == 0)
-                {
-                    if(morePoses) GeneratePoseObj();
-                }
-                MovePoses(1);
-                CheckPoseObj();
-            }
-            else
-            {
-                UpdateModelLerp(timer / timePerFrame);
-                MovePoses(timer / timePerFrame);
-            }
-
+            yield return new WaitForEndOfFrame();
         }
 
     }
@@ -131,6 +143,7 @@ public class PlaybackObj : MonoBehaviour
         }
         else
         {
+            GeneratePoseObj();
             allTextures = true;
         }
     }
@@ -152,12 +165,9 @@ public class PlaybackObj : MonoBehaviour
 
     public void MovePoses(float t)
     {
-        if (poseObjects.Count != 0)
+        foreach (GameObject pose in poseObjects.ToList())
         {
-            foreach (GameObject pose in poseObjects)
-            {
-                pose.GetComponent<IndividualPose>().MoveSelf(t);
-            }
+            pose.GetComponent<IndividualPose>().MoveSelf(t);
         }
     }
 
@@ -168,8 +178,10 @@ public class PlaybackObj : MonoBehaviour
         {
             if (pose.GetComponent<IndividualPose>().HasReachedFinalFrame())
             {
+                pose.GetComponent<IndividualPose>().MoveSelf(1);
                 pose.GetComponent<IndividualPose>().DisposeSelf();
                 poseObjects.Remove(pose);
+                Debug.Log("Pose destroyed at frame: " + curFrame);
             }
         }
     }
@@ -177,5 +189,6 @@ public class PlaybackObj : MonoBehaviour
     public void GeneratePoseObj()
     {
         morePoses = spawnScript.SpawnPose();
+        Debug.Log("Pose spawned at frame: " + curFrame);
     }
 }
