@@ -27,7 +27,7 @@ public class PlaybackObj : MonoBehaviour
     public int firstPoseFrame;
     private float timer;
     private float timePerFrame;
-    private int poseFrame;
+    public int poseFrame;
 
     public PoseSpawnScript spawnScript;
     private int counterForPose = 0;
@@ -167,7 +167,7 @@ public class PlaybackObj : MonoBehaviour
     {
         foreach (GameObject pose in poseObjects.ToList())
         {
-            pose.GetComponent<IndividualPose>().MoveSelf(t);
+            pose.GetComponent<IndividualPose>().MoveSelf();
         }
     }
 
@@ -178,7 +178,7 @@ public class PlaybackObj : MonoBehaviour
         {
             if (pose.GetComponent<IndividualPose>().HasReachedFinalFrame())
             {
-                pose.GetComponent<IndividualPose>().MoveSelf(1);
+                pose.GetComponent<IndividualPose>().MoveSelf();
                 pose.GetComponent<IndividualPose>().DisposeSelf();
                 poseObjects.Remove(pose);
                 Debug.Log("Pose destroyed at frame: " + curFrame);

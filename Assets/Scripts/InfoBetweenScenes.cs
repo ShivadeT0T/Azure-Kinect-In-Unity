@@ -15,5 +15,5 @@ public static class InfoBetweenScenes
     public static string prefabDirectory = "PrefabModels" + Path.DirectorySeparatorChar;
     public static string prefabModelName = "jasper";
     // Intervals between poses in seconds
-    public static int poseInterval = 1;
+    public static int poseInterval = 2;
 }

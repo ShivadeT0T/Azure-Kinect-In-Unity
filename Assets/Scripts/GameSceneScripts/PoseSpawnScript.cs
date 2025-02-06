@@ -40,7 +40,7 @@ public class PoseSpawnScript : MonoBehaviour
         if (posesTexture.Count != 0)
         {
             GameObject poseObj = Instantiate(pose, transform.position, transform.rotation);
-            poseObj.GetComponent<IndividualPose>().SetFrame(mainScript.poseFpsOffset + mainScript.fps);
+            poseObj.GetComponent<IndividualPose>().SetFrame(mainScript.poseFpsOffset + mainScript.poseFrame);
             poseObj.transform.SetParent(self.transform, true);
             poseObj.GetComponent<IndividualPose>().SetPositions(transform.position, new Vector3(mainScript.hitzonePosition.transform.position.x, transform.position.y, transform.position.z));
             poseObj.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
