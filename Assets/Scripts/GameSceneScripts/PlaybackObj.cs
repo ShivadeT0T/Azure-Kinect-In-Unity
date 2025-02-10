@@ -19,7 +19,7 @@ public class PlaybackObj : MonoBehaviour
     private int frameLimit;
     private FramesHandler m_framesHandler;
 
-    private bool replayOn = false;
+    //private bool replayOn = false;
 
     [SerializeField]
     public int fps = 30;
@@ -33,6 +33,7 @@ public class PlaybackObj : MonoBehaviour
     private int counterForPose = 0;
     private bool allTextures = false;
     private bool morePoses = true;
+    private bool coroutineOn = true;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -42,7 +43,7 @@ public class PlaybackObj : MonoBehaviour
     }
 #endif
 
-    void Start()
+    private void Start()
     {
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
         firstPoseFrame = poseFrame + poseFpsOffset - 1;
@@ -56,8 +57,16 @@ public class PlaybackObj : MonoBehaviour
         Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", frames.Count, poses.Count));
 
         timePerFrame = 1f / fps;
+        
+    }
 
-        StartCoroutine(CustomUpdate());
+    public void BeginPlayback()
+    {
+        if (coroutineOn)
+        {
+            StartCoroutine(CustomUpdate());
+            coroutineOn = false;
+        }
 
     }
     IEnumerator CustomUpdate()
