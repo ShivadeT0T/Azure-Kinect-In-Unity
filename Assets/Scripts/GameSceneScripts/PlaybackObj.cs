@@ -8,11 +8,14 @@ using UnityEngine.Rendering;
 
 public class PlaybackObj : MonoBehaviour
 {
+    public JointCalibration jointCalibrationScript;
+
     public GameObject m_tracker;
     public GameObject m_poseTracker;
     public GameObject hitzonePosition;
 
-    private List<BackgroundDataNoDepth> frames;
+    private List<BackgroundDataNoDepth> originalFrames;
+    private List<BackgroundDataNoDepth> scaledFrames;
     private Queue<BackgroundDataNoDepth> poses;
     public List<GameObject> poseObjects;
     private int curFrame = 0;
@@ -33,7 +36,6 @@ public class PlaybackObj : MonoBehaviour
     private int counterForPose = 0;
     private bool allTextures = false;
     private bool morePoses = true;
-    private bool coroutineOn = true;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -48,13 +50,9 @@ public class PlaybackObj : MonoBehaviour
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
         firstPoseFrame = poseFrame + poseFpsOffset - 1;
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
-        frames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
+        originalFrames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
+        Debug.Log("Original frames: " + originalFrames.Count);
         poses = new Queue<BackgroundDataNoDepth>();
-        poses.Enqueue(frames[firstPoseFrame]);
-        frames.Where((item, index) => (index - poseFpsOffset) % poseFrame == poseFrame - 1 && index > firstPoseFrame).ToList().ForEach(pose => poses.Enqueue(pose));
-        //poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
-        frameLimit = frames.Count;
-        Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", frames.Count, poses.Count));
 
         timePerFrame = 1f / fps;
         
@@ -62,12 +60,14 @@ public class PlaybackObj : MonoBehaviour
 
     public void BeginPlayback()
     {
-        if (coroutineOn)
-        {
-            StartCoroutine(CustomUpdate());
-            coroutineOn = false;
-        }
-
+        scaledFrames = jointCalibrationScript.ScaleList(originalFrames);
+        //scaledFrames = originalFrames;
+        poses.Enqueue(scaledFrames[firstPoseFrame]);
+        scaledFrames.Where((item, index) => (index - poseFpsOffset) % poseFrame == poseFrame - 1 && index > firstPoseFrame).ToList().ForEach(pose => poses.Enqueue(pose));
+        //poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
+        frameLimit = scaledFrames.Count;
+        Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", scaledFrames.Count, poses.Count));
+        StartCoroutine(CustomUpdate());
     }
     IEnumerator CustomUpdate()
     {
@@ -130,7 +130,7 @@ public class PlaybackObj : MonoBehaviour
         // TODO: Put condition later to stop it from looping
         if (true)
         {
-            m_tracker.GetComponent<TrackerHandler>().updateTracker(frames[curFrame%frames.Count]);
+            m_tracker.GetComponent<TrackerHandler>().updateTracker(scaledFrames[curFrame%scaledFrames.Count]);
             curFrame++;
         }
     }
@@ -140,7 +140,7 @@ public class PlaybackObj : MonoBehaviour
 
         if (curFrame < frameLimit - 1)
         {
-            m_tracker.GetComponent<TrackerHandler>().updateTrackerLerp(frames[curFrame], frames[curFrame + 1], t);
+            m_tracker.GetComponent<TrackerHandler>().updateTrackerLerp(scaledFrames[curFrame], scaledFrames[curFrame + 1], t);
         }
     }
 

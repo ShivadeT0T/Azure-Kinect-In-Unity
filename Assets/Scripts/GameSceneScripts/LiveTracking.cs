@@ -14,7 +14,6 @@ public class LiveTracking : MonoBehaviour
 
     void Start()
     {
-        jointCalibrator = new JointCalibration();
         const int TRACKER_ID = 0;
         m_skeletalTrackingProvider = new SkeletalTrackingProvider(TRACKER_ID);
         SceneManager.activeSceneChanged += ChangedActiveScene;
@@ -29,7 +28,7 @@ public class LiveTracking : MonoBehaviour
             {
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
-                    handleGamePrep(m_lastFrameData);
+                    if(!beginGame) handleGamePrep(m_lastFrameData);
                     m_tracker.GetComponent<TrackerHandler>().updateTracker(m_lastFrameData);
                 }
             }
@@ -61,13 +60,9 @@ public class LiveTracking : MonoBehaviour
 
     private void handleGamePrep(BackgroundDataNoDepth frame)
     {
-        if (!beginGame)
-        {
-            beginGame = jointCalibrator.CalibrationComplete(frame);
-        }
-        else
-        {
-            jointCalibrator.CalculateJointAverage();
+        if (jointCalibrator.CalibrationComplete(frame)){
+            beginGame = true;
+            jointCalibrator.CalculateLiveJointAverage();
             mainLogic.BeginPlayback();
         }
     }
