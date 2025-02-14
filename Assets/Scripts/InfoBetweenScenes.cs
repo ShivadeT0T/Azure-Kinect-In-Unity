@@ -9,7 +9,7 @@ public enum MenuState
 public static class InfoBetweenScenes
 {
     // "incorrectFile" "test"
-    public static string AnimationFileName = "test";
+    public static string AnimationFileName = "gameTest";
     public static string ErrorMessage;
     public static MenuState menuState = MenuState.NORMAL;
     public static string prefabDirectory = "PrefabModels" + Path.DirectorySeparatorChar;

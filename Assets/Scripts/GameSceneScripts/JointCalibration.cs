@@ -20,8 +20,6 @@ public class JointCalibration : MonoBehaviour
     // Max allowed size of history list.
     private int maxListSize = 100;
 
-    //private bool enoughData = false;
-
     // Borrowed from TrackerHandler to see how the average skeleton renders.
 
     Quaternion Y_180_FLIP = new Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
@@ -32,40 +30,6 @@ public class JointCalibration : MonoBehaviour
     void Awake()
     {
         parentJointMap = new Dictionary<JointId, JointId>();
-
-        // pelvis has no parent so set to count
-        //parentJointMap[JointId.Pelvis] = JointId.Head;
-        //parentJointMap[JointId.SpineNavel] = JointId.Pelvis;
-        //parentJointMap[JointId.SpineChest] = JointId.Pelvis;
-        //parentJointMap[JointId.Neck] = JointId.Pelvis;
-        //parentJointMap[JointId.ClavicleLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.ShoulderLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.ElbowLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.WristLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.HandLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.HandTipLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.ThumbLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.ClavicleRight] = JointId.Pelvis;
-        //parentJointMap[JointId.ShoulderRight] = JointId.Pelvis;
-        //parentJointMap[JointId.ElbowRight] = JointId.Pelvis;
-        //parentJointMap[JointId.WristRight] = JointId.Pelvis;
-        //parentJointMap[JointId.HandRight] = JointId.Pelvis;
-        //parentJointMap[JointId.HandTipRight] = JointId.Pelvis;
-        //parentJointMap[JointId.ThumbRight] = JointId.Pelvis;
-        //parentJointMap[JointId.HipLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.KneeLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.AnkleLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.FootLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.HipRight] = JointId.Pelvis;
-        //parentJointMap[JointId.KneeRight] = JointId.Pelvis;
-        //parentJointMap[JointId.AnkleRight] = JointId.Pelvis;
-        //parentJointMap[JointId.FootRight] = JointId.Pelvis;
-        //parentJointMap[JointId.Head] = JointId.Pelvis;
-        //parentJointMap[JointId.Nose] = JointId.Pelvis;
-        //parentJointMap[JointId.EyeLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.EarLeft] = JointId.Pelvis;
-        //parentJointMap[JointId.EyeRight] = JointId.Pelvis;
-        //parentJointMap[JointId.EarRight] = JointId.Pelvis;
 
         parentJointMap[JointId.Pelvis] = JointId.Count;
         parentJointMap[JointId.SpineNavel] = JointId.Pelvis;
@@ -216,11 +180,12 @@ public class JointCalibration : MonoBehaviour
         return animation.Select(frame => ScaleFrame(frame)).ToList();
     }
 
-    public BackgroundDataNoDepth ScaleFrame(BackgroundDataNoDepth frame)
+    public BackgroundDataNoDepth ScaleFrame(BackgroundDataNoDepth oldFrame)
     {
-        int closestBody = findClosestTrackedBody(frame);
-        frame.Bodies[closestBody] = ScaleSkeletonCoordinates(frame.Bodies[closestBody]);
-        return frame;
+        BackgroundDataNoDepth newFrame = BackgroundDataNoDepth.DeepCopy(oldFrame);
+        int closestBody = findClosestTrackedBody(newFrame);
+        newFrame.Bodies[closestBody] = ScaleSkeletonCoordinates(newFrame.Bodies[closestBody]);
+        return newFrame;
     }
 
     public Body ScaleSkeletonCoordinates(Body skeleton)
@@ -239,6 +204,7 @@ public class JointCalibration : MonoBehaviour
 
             Vector3 localPos;
             localPos = new Vector3(skeleton.JointPositions3D[0].X, skeleton.JointPositions3D[0].Y, skeleton.JointPositions3D[0].Z);
+
             //if (parentJointMap[(JointId)jointNum] != JointId.HandLeft && parentJointMap[(JointId)jointNum] != JointId.HandRight)
             //{
             //    // Pelvis as the local position
@@ -254,6 +220,7 @@ public class JointCalibration : MonoBehaviour
             //        );
             //    //Debug.Log("Should be hand as the parentJoint: " + parentJointMap[(JointId)jointNum]);
             //}
+
             Vector3 relativePos = initialJointPos - localPos;
 
             Vector3 scaledPos;
@@ -275,9 +242,29 @@ public class JointCalibration : MonoBehaviour
             skeleton.JointPositions3D[jointNum].Y = jointPos.y;
             skeleton.JointPositions3D[jointNum].Z = jointPos.z;
 
+            // Same for 2D
 
-            skeleton.JointPositions2D[jointNum].X *= boneScaler[(JointId)jointNum];
-            skeleton.JointPositions2D[jointNum].Y *= boneScaler[(JointId)jointNum];
+            Vector2 initialJointPos2 = new Vector2(skeleton.JointPositions2D[jointNum].X, skeleton.JointPositions2D[jointNum].Y);
+            Vector2 localPos2 = new Vector2(skeleton.JointPositions2D[0].X, skeleton.JointPositions2D[0].Y);
+            Vector2 relativePos2 = initialJointPos2 - localPos2;
+
+            Vector2 scaledPos2;
+
+            if ((parentJointMap[(JointId)jointNum] != JointId.HandLeft && parentJointMap[(JointId)jointNum] != JointId.HandRight))
+            {
+                scaledPos2 = relativePos2 * boneScaler[(JointId)jointNum];
+
+            }
+            else
+            {
+                scaledPos2 = relativePos2 * boneScaler[parentJointMap[(JointId)jointNum]];
+            }
+
+            Vector2 jointPos2 = scaledPos2 + localPos2;
+
+
+            skeleton.JointPositions2D[jointNum].X = jointPos2.x;
+            skeleton.JointPositions2D[jointNum].Y = jointPos2.y;
         }
 
 
@@ -352,7 +339,7 @@ public class JointCalibration : MonoBehaviour
     {
         for (int jointNum = 0; jointNum < (int)JointId.Count; jointNum++)
         {
-            Debug.Log((JointId)jointNum);
+            //Debug.Log((JointId)jointNum);
             Vector3 liveJointPos = new Vector3(averageLiveBody.JointPositions3D[jointNum].X, averageLiveBody.JointPositions3D[jointNum].Y, averageLiveBody.JointPositions3D[jointNum].Z);
             Vector3 animJointPos = new Vector3(animSkeleton.JointPositions3D[jointNum].X, animSkeleton.JointPositions3D[jointNum].Y, animSkeleton.JointPositions3D[jointNum].Z);
 
@@ -379,23 +366,23 @@ public class JointCalibration : MonoBehaviour
                 animParentPos = transform.position;
             }
 
-            Debug.Log((JointId)jointNum + ": live child pos: " + liveJointPos);
-            Debug.Log((JointId)jointNum + ": live parent pos: " + liveParentPos);
-            Debug.Log((JointId)jointNum + ": anim child pos: " + animJointPos);
-            Debug.Log((JointId)jointNum + ": anim parent pos: " + animParentPos);
+            //Debug.Log((JointId)jointNum + ": live child pos: " + liveJointPos);
+            //Debug.Log((JointId)jointNum + ": live parent pos: " + liveParentPos);
+            //Debug.Log((JointId)jointNum + ": anim child pos: " + animJointPos);
+            //Debug.Log((JointId)jointNum + ": anim parent pos: " + animParentPos);
             // Going to test getting scale for 3D only this time
 
             float liveBoneLength = Vector3.Distance(liveJointPos, liveParentPos);
-                float animBoneLength = Vector3.Distance(animJointPos, animParentPos);
+            float animBoneLength = Vector3.Distance(animJointPos, animParentPos);
 
-                Debug.Log("Live distance: " + liveBoneLength);
-                Debug.Log("Anim distance: " + animBoneLength);
+            //Debug.Log("Live distance: " + liveBoneLength);
+            //Debug.Log("Anim distance: " + animBoneLength);
 
-                float scalingFactor = liveBoneLength / animBoneLength;
+            float scalingFactor = liveBoneLength / animBoneLength;
 
-            Debug.Log("Scaling factor: " + scalingFactor);
+            //Debug.Log("Scaling factor: " + scalingFactor);
 
-                boneScaler[(JointId)jointNum] = scalingFactor;
+            boneScaler[(JointId)jointNum] = scalingFactor;
         }
     }
 

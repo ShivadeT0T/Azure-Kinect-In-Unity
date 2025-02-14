@@ -1,3 +1,4 @@
+using Microsoft.Azure.Kinect.BodyTracking;
 using NUnit.Framework.Api;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,13 +7,28 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+public enum ScoringType
+{
+    Excellent,
+    Great,
+    Alright,
+    Miss
+}
+
 public class PlaybackObj : MonoBehaviour
 {
+    Dictionary<ScoringType, float> precisionSystem;
+    Dictionary<ScoringType, float> scoringSystem;
+    float totalScore;
+    float currentScore = 0.0f;
+
     public JointCalibration jointCalibrationScript;
+    public LiveTracking liveTrackingScript;
 
     public GameObject m_tracker;
     public GameObject m_poseTracker;
     public GameObject hitzonePosition;
+    public GameObject floorObj;
 
     private List<BackgroundDataNoDepth> originalFrames;
     private List<BackgroundDataNoDepth> scaledFrames;
@@ -45,6 +61,23 @@ public class PlaybackObj : MonoBehaviour
     }
 #endif
 
+
+    private void Awake()
+    {
+        precisionSystem = new Dictionary<ScoringType, float>();
+
+        precisionSystem[ScoringType.Excellent] = 25;
+        precisionSystem[ScoringType.Great] = 50;
+        precisionSystem[ScoringType.Alright] = 80;
+
+        scoringSystem = new Dictionary<ScoringType, float>();
+
+        scoringSystem[ScoringType.Excellent] = 1.0f;
+        scoringSystem[ScoringType.Great] = 0.8f;
+        scoringSystem[ScoringType.Alright] = 0.5f;
+        scoringSystem[ScoringType.Miss] = 0.0f;
+
+    }
     private void Start()
     {
         poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
@@ -62,10 +95,12 @@ public class PlaybackObj : MonoBehaviour
     {
         scaledFrames = jointCalibrationScript.ScaleList(originalFrames);
         //scaledFrames = originalFrames;
+        RepositionTracker();
         poses.Enqueue(scaledFrames[firstPoseFrame]);
         scaledFrames.Where((item, index) => (index - poseFpsOffset) % poseFrame == poseFrame - 1 && index > firstPoseFrame).ToList().ForEach(pose => poses.Enqueue(pose));
         //poses = new Queue<BackgroundDataNoDepth>(frames.Where((item, index) => index % poseFrame == poseFrame - 1).ToList());
         frameLimit = scaledFrames.Count;
+        totalScore = (float)poses.Count;
         Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", scaledFrames.Count, poses.Count));
         StartCoroutine(CustomUpdate());
     }
@@ -109,8 +144,18 @@ public class PlaybackObj : MonoBehaviour
                         {
                             GeneratePoseObj();
                         }
+
+                        if (curFrame >= scaledFrames.Count)
+                        {
+                            FinishGame();
+                        }
+                        else
+                        {
+                            CheckCoordinates();
+                        }
                     }
                     CheckPoseObj();
+
                 }
                 else
                 {
@@ -182,7 +227,6 @@ public class PlaybackObj : MonoBehaviour
 
     public void CheckPoseObj()
     {
-        // TODO: Logic for checking if poseObj reached final frame and remove and destroy it if so
         foreach (GameObject pose in poseObjects.ToList())
         {
             if (pose.GetComponent<IndividualPose>().HasReachedFinalFrame())
@@ -199,5 +243,109 @@ public class PlaybackObj : MonoBehaviour
     {
         morePoses = spawnScript.SpawnPose();
         Debug.Log("Pose spawned at frame: " + curFrame);
+    }
+
+    // Reposition playback tracker to be on top of floor
+    public void RepositionTracker()
+    {
+        // Because our frames' Y-coordinate is reversed, we seek the highest instead of lowest
+        float highestY = Mathf.NegativeInfinity;
+        foreach(BackgroundDataNoDepth frame in scaledFrames)
+        {
+            int closestBody = findClosestTrackedBody(frame);
+            for (int jointNum = 0; jointNum < (int)JointId.Count; jointNum++)
+            {
+                if (frame.Bodies[closestBody].JointPositions3D[jointNum].Y > highestY) highestY = frame.Bodies[closestBody].JointPositions3D[jointNum].Y;
+            }
+        }
+        if(highestY > Mathf.NegativeInfinity)
+        {
+            float heightDifference = highestY + m_tracker.transform.position.y;
+            Vector3 newPosition = new Vector3(m_tracker.transform.position.x, floorObj.transform.position.y, m_tracker.transform.position.z);
+            newPosition.y = floorObj.transform.position.y + heightDifference;
+            m_tracker.transform.position = newPosition;
+        }
+
+    }
+
+    public void CheckCoordinates()
+    {
+        int closestBody = findClosestTrackedBody(scaledFrames[curFrame]);
+
+        int closestBody2 = findClosestTrackedBody(originalFrames[curFrame]);
+
+
+        // Left and right wrists' positions relative to pelvis
+
+        Vector2 localPos = new Vector2(scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
+        Vector2 leftWrist = new Vector2(
+            scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].Y);
+        Vector2 rightWrist = new Vector2(scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].Y);
+
+        Vector2 leftPos = leftWrist - localPos;
+        Vector2 rightPos = rightWrist - localPos;
+
+
+        Vector2 localOgPos = new Vector2(originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
+        
+        Vector2 leftOgPos = new Vector2(
+            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].X - localOgPos.x,
+            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].Y - localOgPos.y);
+
+        Vector2 rightOgPos = new Vector2(
+            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].X - localOgPos.x,
+            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].Y - localOgPos.y);
+
+        //Debug.Log("original frame's left wrist: " + leftOgPos.y + " Y, " + leftOgPos.x + " X");
+        //Debug.Log("scaled frame's left wrist: " + leftPos.y + " Y, " + leftPos.x + " X");
+        //Debug.Log("original frame's right wrist: " + rightOgPos.y + " Y, " + rightOgPos.x + " X");
+        //Debug.Log("scaled frame's right wrist: " + rightPos.y + " Y, " + rightPos.x + " X");
+
+        float averagePrecision = liveTrackingScript.CompareCoordinates(leftPos, rightPos);
+        Debug.Log("Average precision: " + averagePrecision);
+        CalculateScore(averagePrecision);
+
+    }
+
+
+
+    public void CalculateScore(float precision)
+    {
+        ScoringType currentType = ScoringType.Miss;
+
+        foreach(KeyValuePair<ScoringType, float> score in precisionSystem)
+        {
+            if(currentType == ScoringType.Miss)
+            {
+                if (precision <= score.Value) currentType = score.Key;
+            }
+        }
+
+        currentScore += scoringSystem[currentType];
+        Debug.Log("Current score counter :" + currentScore);
+        Debug.Log("Score type: " + currentType);
+    }
+
+    public void FinishGame()
+    {
+        Debug.Log("Total accuracy: " + currentScore / totalScore);
+    }
+
+    private int findClosestTrackedBody(BackgroundDataNoDepth trackerFrameData)
+    {
+        int closestBody = -1;
+        const float MAX_DISTANCE = 5000.0f;
+        float minDistanceFromKinect = MAX_DISTANCE;
+        for (int i = 0; i < (int)trackerFrameData.NumOfBodies; i++)
+        {
+            var pelvisPosition = trackerFrameData.Bodies[i].JointPositions3D[(int)JointId.Pelvis];
+            Vector3 pelvisPos = new Vector3((float)pelvisPosition.X, (float)pelvisPosition.Y, (float)pelvisPosition.Z);
+            if (pelvisPos.magnitude < minDistanceFromKinect)
+            {
+                closestBody = i;
+                minDistanceFromKinect = pelvisPos.magnitude;
+            }
+        }
+        return closestBody;
     }
 }
