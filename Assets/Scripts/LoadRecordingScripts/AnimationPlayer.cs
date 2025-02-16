@@ -1,3 +1,4 @@
+using Microsoft.Azure.Kinect.BodyTracking;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 
 public class AnimationPlayer : MonoBehaviour
 {
+    public GameObject floorObj;
     public GameObject m_tracker;
     public LoadUI uiManager;
     public bool LoopOn = true;
@@ -47,6 +49,7 @@ public class AnimationPlayer : MonoBehaviour
         timePerFrame = 1f / fps;
 
         UpdateModel();
+        RepositionTracker();
     }
 
     private void Update()
@@ -141,5 +144,46 @@ public class AnimationPlayer : MonoBehaviour
     public void ToggleLerp(bool toggle)
     {
         lerp = toggle;
+    }
+
+    public void RepositionTracker()
+    {
+        // Because our frames' Y-coordinate is reversed, we seek the highest instead of lowest
+        Debug.Log("Inside reposition function");
+        float highestY = Mathf.NegativeInfinity;
+        foreach (BackgroundDataNoDepth frame in frames)
+        {
+            int closestBody = findClosestTrackedBody(frame);
+            for (int jointNum = 0; jointNum < (int)JointId.Count; jointNum++)
+            {
+                if (frame.Bodies[closestBody].JointPositions3D[jointNum].Y > highestY) highestY = frame.Bodies[closestBody].JointPositions3D[jointNum].Y;
+            }
+        }
+        if (highestY > Mathf.NegativeInfinity)
+        {
+            float heightDifference = highestY + m_tracker.transform.position.y;
+            Vector3 newPosition = new Vector3(m_tracker.transform.position.x, floorObj.transform.position.y, m_tracker.transform.position.z);
+            newPosition.y = floorObj.transform.position.y + heightDifference;
+            m_tracker.transform.position = newPosition;
+        }
+
+    }
+
+    private int findClosestTrackedBody(BackgroundDataNoDepth trackerFrameData)
+    {
+        int closestBody = -1;
+        const float MAX_DISTANCE = 5000.0f;
+        float minDistanceFromKinect = MAX_DISTANCE;
+        for (int i = 0; i < (int)trackerFrameData.NumOfBodies; i++)
+        {
+            var pelvisPosition = trackerFrameData.Bodies[i].JointPositions3D[(int)JointId.Pelvis];
+            Vector3 pelvisPos = new Vector3((float)pelvisPosition.X, (float)pelvisPosition.Y, (float)pelvisPosition.Z);
+            if (pelvisPos.magnitude < minDistanceFromKinect)
+            {
+                closestBody = i;
+                minDistanceFromKinect = pelvisPos.magnitude;
+            }
+        }
+        return closestBody;
     }
 }

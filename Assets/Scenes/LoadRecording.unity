@@ -2373,7 +2373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 210279053, guid: 019b917704c3c29478d778e143d411d2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 210279053, guid: 019b917704c3c29478d778e143d411d2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3641,7 +3641,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 303af3a046368c642bc882b37367cf81, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4005,7 +4005,7 @@ Transform:
   m_GameObject: {fileID: 1549671839}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0.7, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4233,6 +4233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c984391075e63f4e8ecf3da95f101b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  floorObj: {fileID: 1421629320}
   m_tracker: {fileID: 212085668}
   uiManager: {fileID: 1756980221}
   LoopOn: 1
@@ -4825,7 +4826,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoPlayerUi: {fileID: 1660714964}
   animationPlayer: {fileID: 1607148717}
-  infoUi: {fileID: 1660714964}
+  infoUi: {fileID: 1408482984}
   lerpToggle: {fileID: 1381012249}
 --- !u!1 &1791537229
 GameObject:
