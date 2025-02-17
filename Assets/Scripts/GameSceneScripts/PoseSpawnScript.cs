@@ -49,7 +49,7 @@ public class PoseSpawnScript : MonoBehaviour
             return true;
         }
 
-        Debug.Log("NO MORE POSES TO SPAWN!");
+        //Debug.Log("NO MORE POSES TO SPAWN!");
         return false;
     }
 

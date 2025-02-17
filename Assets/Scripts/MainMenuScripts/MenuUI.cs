@@ -62,11 +62,32 @@ public class MenuUI : MonoBehaviour
     public GameObject ErrorDialog;
     public TMP_Text errorMessage;
 
+    public TMP_Dropdown dropdown;
+
+    private Dictionary<int, DifficultyState> dropdownDifficulty;
+    private Dictionary<DifficultyState, int> inverseDropdownDifficulty;
+
 
     public DialogType dialogType = DialogType.DEFAULT;
+
+    private void Awake()
+    {
+        dropdownDifficulty = new Dictionary<int, DifficultyState>();
+
+        dropdownDifficulty[0] = DifficultyState.HARD;
+        dropdownDifficulty[1] = DifficultyState.NORMAL;
+        dropdownDifficulty[2] = DifficultyState.EASY;
+
+        inverseDropdownDifficulty = new Dictionary<DifficultyState, int>();
+
+        inverseDropdownDifficulty[DifficultyState.HARD] = 0;
+        inverseDropdownDifficulty[DifficultyState.NORMAL] = 1;
+        inverseDropdownDifficulty[DifficultyState.EASY] = 2;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        dropdown.value = inverseDropdownDifficulty[InfoBetweenScenes.diffficultyState];
         animationList = new List<AnimationDetails>();
         foreach (AnimationFile file in FileManager.LoadFilesInfo())
         {
@@ -216,5 +237,10 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(modelScreenCanvas);
     }
 
+    public void GetDropDownValue()
+    {
+        InfoBetweenScenes.diffficultyState = dropdownDifficulty[dropdown.value];
+        Debug.Log("Difficulty selected: " + InfoBetweenScenes.diffficultyState);
+    }
 
 }

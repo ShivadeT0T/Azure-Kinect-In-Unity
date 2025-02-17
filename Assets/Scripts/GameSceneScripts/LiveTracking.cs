@@ -36,6 +36,10 @@ public class LiveTracking : MonoBehaviour
                 }
             }
         }
+        if (m_skeletalTrackingProvider.IsOffline)
+        {
+            mainLogic.HandleCameraError();
+        }
     }
 
     private void handleGamePrep(BackgroundDataNoDepth frame)

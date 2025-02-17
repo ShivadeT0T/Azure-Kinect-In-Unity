@@ -5,7 +5,6 @@ public class CameraLiveFeed : MonoBehaviour
 {
     public UnityEngine.UI.Image liveFeedComponent;
     public GameObject imageObj;
-    public bool showCamera = false;
 
     private int width, height;
     private byte[] colorImage;

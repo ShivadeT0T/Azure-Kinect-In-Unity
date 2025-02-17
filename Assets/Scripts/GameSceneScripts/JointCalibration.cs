@@ -430,7 +430,7 @@ public class JointCalibration : MonoBehaviour
     {
         for(int jointNum = 0; jointNum < (int)JointId.Count; jointNum++)
         {
-            Debug.Log((int)skeleton.JointPrecisions[jointNum]);
+            //Debug.Log((int)skeleton.JointPrecisions[jointNum]);
 
             if ((int)skeleton.JointPrecisions[jointNum] < 2) return false;
         }

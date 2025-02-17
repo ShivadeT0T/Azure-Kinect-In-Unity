@@ -3,9 +3,12 @@ using NUnit.Framework.Api;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 public enum ScoringType
 {
@@ -21,6 +24,7 @@ public class PlaybackObj : MonoBehaviour
     Dictionary<ScoringType, float> scoringSystem;
     float totalScore;
     float currentScore = 0.0f;
+    public GameObject scoreTextPrefab;
 
     public JointCalibration jointCalibrationScript;
     public LiveTracking liveTrackingScript;
@@ -38,8 +42,6 @@ public class PlaybackObj : MonoBehaviour
     private int frameLimit;
     private FramesHandler m_framesHandler;
 
-    //private bool replayOn = false;
-
     [SerializeField]
     public int fps = 30;
     public int poseFpsOffset = 15;
@@ -47,11 +49,22 @@ public class PlaybackObj : MonoBehaviour
     private float timer;
     private float timePerFrame;
     public int poseFrame;
+    private int countdown = 5;
+
+    // Interval between poses in seconds
+    private int poseInterval = 1;
 
     public PoseSpawnScript spawnScript;
     private int counterForPose = 0;
     private bool allTextures = false;
     private bool morePoses = true;
+    private bool gameFinished = false;
+
+    public GameObject calibrationCanvas;
+    public TMP_Text countdownToStart;
+    public TMP_Text infoText;
+    public GameObject finalScoreCanvas;
+    public TMP_Text finalScore;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -77,10 +90,25 @@ public class PlaybackObj : MonoBehaviour
         scoringSystem[ScoringType.Alright] = 0.5f;
         scoringSystem[ScoringType.Miss] = 0.0f;
 
+        switch (InfoBetweenScenes.diffficultyState)
+        {
+            case DifficultyState.HARD:
+                poseInterval = 1;
+                break;
+            case DifficultyState.NORMAL:
+                poseInterval = 2;
+                break;
+            case DifficultyState.EASY:
+                poseInterval = 3;
+                break;
+            default:
+                poseInterval = 1;
+                break;
+        }
     }
     private void Start()
     {
-        poseFrame = InfoBetweenScenes.poseInterval * (int) fps;
+        poseFrame = poseInterval * (int) fps;
         firstPoseFrame = poseFrame + poseFpsOffset - 1;
         m_framesHandler = new FramesHandler(HandlerType.LOAD);
         originalFrames = m_framesHandler.LoadAnimation(InfoBetweenScenes.AnimationFileName).ToList();
@@ -89,6 +117,12 @@ public class PlaybackObj : MonoBehaviour
 
         timePerFrame = 1f / fps;
         
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            MenuScene();
     }
 
     public void BeginPlayback()
@@ -102,11 +136,23 @@ public class PlaybackObj : MonoBehaviour
         frameLimit = scaledFrames.Count;
         totalScore = (float)poses.Count;
         Debug.Log(string.Format("Total frames: {0}, Total poses: {1}", scaledFrames.Count, poses.Count));
-        StartCoroutine(CustomUpdate());
+        StartCoroutine(StartCountdown());
     }
-    IEnumerator CustomUpdate()
+
+    private IEnumerator StartCountdown()
     {
-        while (true)
+        infoText.text = "";
+        for (int i = countdown; i > 0; i--)
+        {
+            countdownToStart.text = i.ToString();
+            yield return new WaitForSeconds(1);
+        }
+        calibrationCanvas.SetActive(false);
+        StartCoroutine(StartGame());
+    }
+    IEnumerator StartGame()
+    {
+        while (!gameFinished)
         {
             // Generate poses before starting the playback
             if (!allTextures)
@@ -148,10 +194,6 @@ public class PlaybackObj : MonoBehaviour
                         if (curFrame >= scaledFrames.Count)
                         {
                             FinishGame();
-                        }
-                        else
-                        {
-                            CheckCoordinates();
                         }
                     }
                     CheckPoseObj();
@@ -234,7 +276,8 @@ public class PlaybackObj : MonoBehaviour
                 pose.GetComponent<IndividualPose>().MoveSelf();
                 pose.GetComponent<IndividualPose>().DisposeSelf();
                 poseObjects.Remove(pose);
-                Debug.Log("Pose destroyed at frame: " + curFrame);
+                //Debug.Log("Pose destroyed at frame: " + curFrame);
+                CheckCoordinates();
             }
         }
     }
@@ -242,7 +285,7 @@ public class PlaybackObj : MonoBehaviour
     public void GeneratePoseObj()
     {
         morePoses = spawnScript.SpawnPose();
-        Debug.Log("Pose spawned at frame: " + curFrame);
+        //Debug.Log("Pose spawned at frame: " + curFrame);
     }
 
     // Reposition playback tracker to be on top of floor
@@ -302,14 +345,15 @@ public class PlaybackObj : MonoBehaviour
         //Debug.Log("scaled frame's right wrist: " + rightPos.y + " Y, " + rightPos.x + " X");
 
         float averagePrecision = liveTrackingScript.CompareCoordinates(leftPos, rightPos);
-        Debug.Log("Average precision: " + averagePrecision);
-        CalculateScore(averagePrecision);
+        //Debug.Log("Average precision: " + averagePrecision);
+        ScoringType scoreText = CalculateScore(averagePrecision);
+        ScoreTextSpawner(scoreText);
 
     }
 
 
 
-    public void CalculateScore(float precision)
+    public ScoringType CalculateScore(float precision)
     {
         ScoringType currentType = ScoringType.Miss;
 
@@ -322,13 +366,48 @@ public class PlaybackObj : MonoBehaviour
         }
 
         currentScore += scoringSystem[currentType];
-        Debug.Log("Current score counter :" + currentScore);
-        Debug.Log("Score type: " + currentType);
+        //Debug.Log("Current score counter :" + currentScore);
+        //Debug.Log("Score type: " + currentType);
+
+        return currentType;
+    }
+
+    public void ScoreTextSpawner(ScoringType type)
+    {
+        string text = type.ToString();
+        Color32 color = new Color32(0, 255, 13, 255);
+        switch (type)
+        {
+            case ScoringType.Excellent:
+                color = new Color32(0, 255, 13, 255);
+                break;
+            case ScoringType.Great:
+                color = new Color32(173, 200, 70, 255);
+                break;
+            case ScoringType.Alright:
+                color = new Color32(228, 177, 107, 255);
+                break;
+            case ScoringType.Miss:
+                color = new Color32(225, 128, 119, 255);
+                break;
+            default:
+                Debug.Log("Default color");
+                break;
+        }
+        GameObject scoreText = Instantiate(scoreTextPrefab, hitzonePosition.transform.position + new Vector3(0, 150), hitzonePosition.transform.rotation);
+        scoreText.GetComponentInChildren<TMP_Text>().text = text;
+        scoreText.GetComponentInChildren<TMP_Text>().color = color;
+        scoreText.transform.SetParent(hitzonePosition.transform, true);
+        scoreText.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+
     }
 
     public void FinishGame()
     {
-        Debug.Log("Total accuracy: " + currentScore / totalScore);
+        gameFinished = true;
+        //Debug.Log("Total accuracy: " + currentScore / totalScore);
+        finalScore.text = $"{(int)(currentScore / totalScore * 100)}%";
+        finalScoreCanvas.SetActive(true);
     }
 
     private int findClosestTrackedBody(BackgroundDataNoDepth trackerFrameData)
@@ -347,5 +426,16 @@ public class PlaybackObj : MonoBehaviour
             }
         }
         return closestBody;
+    }
+
+    public void MenuScene()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+    public void HandleCameraError()
+    {
+        InfoBetweenScenes.ErrorMessage = "Could not connect to Azure camera. Make sure your camera is connected.";
+        InfoBetweenScenes.menuState = MenuState.ERROR;
+        MenuScene();
     }
 }
