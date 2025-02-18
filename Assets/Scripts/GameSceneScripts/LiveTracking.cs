@@ -59,15 +59,24 @@ public class LiveTracking : MonoBehaviour
 
         // X-coordinates negative to match with the playback's coordinates (mirrored)
 
-        Vector2 localLivePos = new Vector2(-m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.Pelvis].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.Pelvis].Y);
-        Vector2 leftLiveWrist = new Vector2(-m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristLeft].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristLeft].Y);
-        Vector2 rightLiveWrist = new Vector2(-m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristRight].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristRight].Y);
+        Vector2 localLivePos = new Vector2(m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.Pelvis].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.Pelvis].Y);
+        Vector2 leftLiveWrist = new Vector2(m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristLeft].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristLeft].Y);
+        Vector2 rightLiveWrist = new Vector2(m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristRight].X, m_lastFrameData.Bodies[0].JointPositions2D[(int)JointId.WristRight].Y);
 
         Vector2 leftLivePos = leftLiveWrist - localLivePos;
         Vector2 rightLivePos = rightLiveWrist - localLivePos;
 
+        Vector2 newVectorL = new Vector2(leftLivePos.x, rightLivePos.y);
+        Vector2 newVectorR = new Vector2(rightLivePos.x, leftLivePos.y);
+
+        leftLivePos = newVectorL;
+        rightLivePos = newVectorR;
+
         //Debug.Log("live frame's left wrist: " + leftLivePos.y + " Y, " + leftLivePos.x + " X");
         //Debug.Log("live frame's right wrist: " + rightLivePos.y + " Y, " + rightLivePos.x + " X");
+
+        Debug.Log("LeftLivePos : " + leftLivePos);
+        Debug.Log("RightLivePos : " + rightLivePos);
 
         float leftWristDistance = Vector2.Distance(leftWrist, leftLivePos);
         float rightWristDistance = Vector2.Distance(rightWrist, rightLivePos);

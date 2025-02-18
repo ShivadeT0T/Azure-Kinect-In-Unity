@@ -171,7 +171,9 @@ public class JointCalibration : MonoBehaviour
         }
         List<Body> animationBodies = ExtractBodies(animation);
 
-        Body animationAverageBody = CalculateRecordingJointAverage(animationBodies);
+        //Body animationAverageBody = CalculateRecordingJointAverage(animationBodies);
+
+        Body animationAverageBody = animationBodies[0];
 
         CalculateBoneScale(animationAverageBody);
 

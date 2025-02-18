@@ -277,7 +277,7 @@ public class PlaybackObj : MonoBehaviour
                 pose.GetComponent<IndividualPose>().DisposeSelf();
                 poseObjects.Remove(pose);
                 //Debug.Log("Pose destroyed at frame: " + curFrame);
-                CheckCoordinates();
+                CheckCoordinates(curFrame);
             }
         }
     }
@@ -311,41 +311,44 @@ public class PlaybackObj : MonoBehaviour
 
     }
 
-    public void CheckCoordinates()
+    public void CheckCoordinates(int frame)
     {
-        int closestBody = findClosestTrackedBody(scaledFrames[curFrame]);
+        int closestBody = findClosestTrackedBody(scaledFrames[frame]);
 
-        int closestBody2 = findClosestTrackedBody(originalFrames[curFrame]);
+        int closestBody2 = findClosestTrackedBody(originalFrames[frame]);
 
 
         // Left and right wrists' positions relative to pelvis
 
-        Vector2 localPos = new Vector2(scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
+        Vector2 localPos = new Vector2(scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
         Vector2 leftWrist = new Vector2(
-            scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].Y);
-        Vector2 rightWrist = new Vector2(scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].X, scaledFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].Y);
+            scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].X, scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.WristLeft].Y);
+        Vector2 rightWrist = new Vector2(scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].X, scaledFrames[frame].Bodies[closestBody].JointPositions2D[(int)JointId.WristRight].Y);
 
         Vector2 leftPos = leftWrist - localPos;
         Vector2 rightPos = rightWrist - localPos;
 
 
-        Vector2 localOgPos = new Vector2(originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
-        
-        Vector2 leftOgPos = new Vector2(
-            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].X - localOgPos.x,
-            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].Y - localOgPos.y);
+        //Vector2 localOgPos = new Vector2(originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].X, originalFrames[curFrame].Bodies[closestBody].JointPositions2D[(int)JointId.Pelvis].Y);
 
-        Vector2 rightOgPos = new Vector2(
-            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].X - localOgPos.x,
-            originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].Y - localOgPos.y);
+        //Vector2 leftOgPos = new Vector2(
+        //    originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].X - localOgPos.x,
+        //    originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristLeft].Y - localOgPos.y);
+
+        //Vector2 rightOgPos = new Vector2(
+        //    originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].X - localOgPos.x,
+        //    originalFrames[curFrame].Bodies[closestBody2].JointPositions2D[(int)JointId.WristRight].Y - localOgPos.y);
 
         //Debug.Log("original frame's left wrist: " + leftOgPos.y + " Y, " + leftOgPos.x + " X");
         //Debug.Log("scaled frame's left wrist: " + leftPos.y + " Y, " + leftPos.x + " X");
         //Debug.Log("original frame's right wrist: " + rightOgPos.y + " Y, " + rightOgPos.x + " X");
         //Debug.Log("scaled frame's right wrist: " + rightPos.y + " Y, " + rightPos.x + " X");
 
+        Debug.Log("LeftPos : " + leftPos);
+        Debug.Log("RightPos : " + rightPos);
+
         float averagePrecision = liveTrackingScript.CompareCoordinates(leftPos, rightPos);
-        //Debug.Log("Average precision: " + averagePrecision);
+        Debug.Log("Average precision: " + averagePrecision);
         ScoringType scoreText = CalculateScore(averagePrecision);
         ScoreTextSpawner(scoreText);
 
