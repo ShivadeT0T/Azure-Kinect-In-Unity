@@ -19,8 +19,13 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
 
     public SkeletalTrackingProvider(int id, CameraLiveFeed cameraLiveFeed) : base(id)
     {
-        Debug.Log("in the skeleton provider constructor");
+        Debug.Log("in the skeleton provider constructor with camera live feed");
         this.cameraLiveFeed = cameraLiveFeed;
+    }
+
+    public SkeletalTrackingProvider(int id) : base(id)
+    {
+        Debug.Log("in the skeleton provider constructor");
     }
 
 
@@ -84,9 +89,12 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                                 Capture bodyFrameCapture = frame.Capture;
                                 Image depthImage = bodyFrameCapture.Depth;
 
-                                // Get color image and update camera live feed
-                                Image colorImage = bodyFrameCapture.Color;
-                                cameraLiveFeed.UpdateLiveFeed(colorImage);
+                                // Get color image and update camera live feed if such object exists
+                                if (cameraLiveFeed)
+                                {
+                                    Image colorImage = bodyFrameCapture.Color;
+                                    cameraLiveFeed.UpdateLiveFeed(colorImage);
+                                }
 
                                 if (!readFirstFrame)
                                 {

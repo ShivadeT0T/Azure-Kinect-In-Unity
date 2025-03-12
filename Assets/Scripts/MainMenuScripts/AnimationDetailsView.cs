@@ -28,4 +28,9 @@ public class AnimationDetailsView : MonoBehaviour
     {
         uiScript.ShowDialog(animationObj, DialogType.DELETE);
     }
+
+    public void PlayButton()
+    {
+        uiScript.ShowDialog(animationObj, DialogType.GAME);
+    }
 }

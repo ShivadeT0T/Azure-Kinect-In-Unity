@@ -1,18 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LoadUI : MonoBehaviour
 {
     public GameObject VideoPlayerUi;
     public AnimationPlayer animationPlayer;
-    public GameObject InfoUi;
+    public GameObject infoUi;
+    public Toggle lerpToggle;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
             VideoPlayerUi.SetActive(false);
-            InfoUi.SetActive(false);
+            infoUi.SetActive(false);
         }
             
 
@@ -27,6 +29,9 @@ public class LoadUI : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
             animationPlayer.IncrementVideo(true);
+
+        if (Input.GetKeyDown(KeyCode.L))
+            lerpToggle.isOn = !lerpToggle.isOn;
     }
 
     public void MenuScene()
@@ -43,6 +48,6 @@ public class LoadUI : MonoBehaviour
 
     public void ToggleInfo()
     {
-        InfoUi.SetActive(!InfoUi.activeSelf);
+        infoUi.SetActive(!infoUi.activeSelf);
     }
 }

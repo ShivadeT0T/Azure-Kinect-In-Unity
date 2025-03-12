@@ -11,12 +11,6 @@ public class replayRecording : MonoBehaviour
     private IReadOnlyCollection<BackgroundDataNoDepth> frames;
     private bool ReplayOn = false;
 
-
-    private void Awake()
-    {
-        Application.targetFrameRate = 30;
-    }
-
     public void SetUpReplay(IReadOnlyCollection<BackgroundDataNoDepth> animation)
     {
         frames = animation;

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public enum DialogType
 {
+    GAME,
     LOAD,
     DELETE,
     DEFAULT
@@ -49,6 +50,10 @@ public class MenuUI : MonoBehaviour
     public GameObject animationScrollViewContent;
     public AnimationDetailsView animationDetailsPrefab;
 
+    public GameObject practiceScrollViewContent;
+    public AnimationDetailsView practiceDetailsPrefab;
+    public GameObject PracticeScreenCanvas;
+
     public GameObject LoadScreenCanvas;
 
     public GameObject DialogCanvas;
@@ -57,11 +62,32 @@ public class MenuUI : MonoBehaviour
     public GameObject ErrorDialog;
     public TMP_Text errorMessage;
 
+    public TMP_Dropdown dropdown;
+
+    private Dictionary<int, DifficultyState> dropdownDifficulty;
+    private Dictionary<DifficultyState, int> inverseDropdownDifficulty;
+
 
     public DialogType dialogType = DialogType.DEFAULT;
+
+    private void Awake()
+    {
+        dropdownDifficulty = new Dictionary<int, DifficultyState>();
+
+        dropdownDifficulty[0] = DifficultyState.HARD;
+        dropdownDifficulty[1] = DifficultyState.NORMAL;
+        dropdownDifficulty[2] = DifficultyState.EASY;
+
+        inverseDropdownDifficulty = new Dictionary<DifficultyState, int>();
+
+        inverseDropdownDifficulty[DifficultyState.HARD] = 0;
+        inverseDropdownDifficulty[DifficultyState.NORMAL] = 1;
+        inverseDropdownDifficulty[DifficultyState.EASY] = 2;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        dropdown.value = inverseDropdownDifficulty[InfoBetweenScenes.diffficultyState];
         animationList = new List<AnimationDetails>();
         foreach (AnimationFile file in FileManager.LoadFilesInfo())
         {
@@ -106,6 +132,12 @@ public class MenuUI : MonoBehaviour
         ShowCanvas(DialogCanvas);
     }
 
+    public void GameScene(string fileName)
+    {
+        InfoBetweenScenes.AnimationFileName = fileName;
+        SceneManager.LoadScene("GameScene");
+    }
+
     public void LoadScene(string fileName)
     {
         InfoBetweenScenes.AnimationFileName = fileName;
@@ -126,6 +158,14 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(LoadScreenCanvas);
     }
 
+    public void ClearGamePrefab()
+    {
+        foreach (Transform transf in practiceScrollViewContent.transform)
+        {
+            Destroy(transf.gameObject);
+        }
+    }
+
     public void ClearAnimationPrefab()
     {
         foreach (Transform transf in animationScrollViewContent.transform)
@@ -139,6 +179,21 @@ public class MenuUI : MonoBehaviour
         foreach (Transform transf in modelScrollViewContent.transform)
         {
             Destroy(transf.gameObject);
+        }
+    }
+
+    public void DisplayGameDetailsList()
+    {
+
+        ClearGamePrefab();
+        ShowCanvas(PracticeScreenCanvas);
+
+        foreach (AnimationDetails animationDetails in animationList)
+        {
+            AnimationDetailsView animDetailObj = Instantiate(practiceDetailsPrefab) as AnimationDetailsView;
+            animDetailObj.gameObject.SetActive(true);
+            animDetailObj.UpdateAnimationDetails(animationDetails);
+            animDetailObj.transform.SetParent(practiceScrollViewContent.transform, false);
         }
     }
 
@@ -182,5 +237,10 @@ public class MenuUI : MonoBehaviour
         CloseCanvas(modelScreenCanvas);
     }
 
+    public void GetDropDownValue()
+    {
+        InfoBetweenScenes.diffficultyState = dropdownDifficulty[dropdown.value];
+        Debug.Log("Difficulty selected: " + InfoBetweenScenes.diffficultyState);
+    }
 
 }
