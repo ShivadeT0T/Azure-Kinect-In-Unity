@@ -1,7 +1,7 @@
 
-# Azure Kinect On Unity
+# Azure Kinect In Unity
 
-This Unity project utilizes Azure Kinect's 3D body tracking to record user's movements and displaying them on a 3D model in Unity. The saved recordings can be played back or used in a minigame within the app.
+This Project utilizes Azure Kinect's 3D body tracking to record user's movements and displaying them on a 3D model in Unity. The saved recordings can be played back or used in a minigame within the app.
 
 ## Features
 Here's a list of different features inside the app:
